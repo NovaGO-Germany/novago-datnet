@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NovaGO DatNet</title>
   <style>
-    :root {
+    /* THEME DEFINITIONS */
+    :root, [data-theme="dark"] {
       --bg-color: #0f172a;
       --card-bg: #1e293b;
       --accent-color: #0ea5e9;
@@ -18,13 +19,13 @@
     }
 
     [data-theme="light"] {
-      --bg-color: #f8fafc;
+      --bg-color: #f1f5f9;
       --card-bg: #ffffff;
       --accent-color: #0284c7;
       --accent-hover: #0369a1;
       --text-color: #0f172a;
       --text-muted: #64748b;
-      --border-color: #e2e8f0;
+      --border-color: #cbd5e1;
       --chat-me: #10b981;
       --chat-other: #e2e8f0;
     }
@@ -39,6 +40,42 @@
       --border-color: #39ff14;
       --chat-me: #1f521d;
       --chat-other: #222222;
+    }
+
+    [data-theme="cyberpunk"] {
+      --bg-color: #120ef6;
+      --card-bg: #1a103c;
+      --accent-color: #ff0055;
+      --accent-hover: #d60045;
+      --text-color: #fcee0a;
+      --text-muted: #00f0ff;
+      --border-color: #ff0055;
+      --chat-me: #ff0055;
+      --chat-other: #2b1259;
+    }
+
+    [data-theme="ocean"] {
+      --bg-color: #031e30;
+      --card-bg: #0a2d42;
+      --accent-color: #00d2ff;
+      --accent-hover: #00a0c6;
+      --text-color: #e0f7fa;
+      --text-muted: #80deea;
+      --border-color: #154c71;
+      --chat-me: #00838f;
+      --chat-other: #154c71;
+    }
+
+    [data-theme="emerald"] {
+      --bg-color: #062319;
+      --card-bg: #0d3829;
+      --accent-color: #10b981;
+      --accent-hover: #059669;
+      --text-color: #ecfdf5;
+      --text-muted: #6ee7b7;
+      --border-color: #1b5e46;
+      --chat-me: #047857;
+      --chat-other: #1b5e46;
     }
 
     * {
@@ -58,23 +95,23 @@
     }
 
     header {
-      padding: 1.5rem 1rem 1rem;
+      padding: 1.25rem 1rem 0.75rem;
       text-align: center;
       background: var(--card-bg);
       border-bottom: 1px solid var(--border-color);
     }
 
     header h1 {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
       letter-spacing: -0.025em;
     }
 
     .status-badge {
       display: inline-block;
-      margin-top: 0.5rem;
-      padding: 0.25rem 0.75rem;
-      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.7rem;
       font-weight: 600;
       border-radius: 9999px;
       background-color: rgba(14, 165, 233, 0.15);
@@ -87,6 +124,7 @@
       max-width: 600px;
       width: 100%;
       margin: 0 auto;
+      padding-bottom: 5rem;
     }
 
     .tab-content {
@@ -107,21 +145,21 @@
     }
 
     .card h2 {
-      font-size: 1.125rem;
+      font-size: 1.1rem;
       margin-bottom: 0.75rem;
       color: var(--accent-color);
     }
 
     label {
       display: block;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      margin-bottom: 0.375rem;
+      margin-bottom: 0.35rem;
     }
 
     select, input, button {
       width: 100%;
-      padding: 0.625rem;
+      padding: 0.65rem;
       border-radius: 0.5rem;
       border: 1px solid var(--border-color);
       background: var(--bg-color);
@@ -144,6 +182,34 @@
       background: var(--accent-hover);
     }
 
+    /* DASHBOARD GRID */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .dash-stat {
+      background: rgba(0,0,0,0.15);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .dash-stat .num {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+
+    .dash-stat .label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* COUNTER STYLING */
     .counter-controls {
       display: flex;
       gap: 0.5rem;
@@ -151,10 +217,10 @@
     }
 
     .counter-btn {
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       font-weight: bold;
-      width: 3rem;
-      height: 3rem;
+      width: 3.5rem;
+      height: 3.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -163,16 +229,38 @@
     .counter-display {
       flex: 1;
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 2rem;
       font-weight: bold;
     }
 
-    /* CHAT STYLING */
+    /* CHAT SELECTOR & CHAT ENGINE */
+    .chat-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .chat-selector button {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 0.75rem;
+      margin-bottom: 0;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .chat-selector button.active {
+      background: var(--accent-color);
+      color: #fff;
+      border-color: var(--accent-color);
+    }
+
     .chat-box {
       height: 320px;
       overflow-y: auto;
       border: 1px solid var(--border-color);
-      background: rgba(0,0,0,0.1);
+      background: rgba(0,0,0,0.15);
       border-radius: 0.5rem;
       padding: 0.75rem;
       margin-bottom: 0.75rem;
@@ -182,10 +270,10 @@
     }
 
     .chat-msg {
-      max-width: 80%;
+      max-width: 85%;
       padding: 0.5rem 0.75rem;
       border-radius: 0.75rem;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       position: relative;
       word-wrap: break-word;
       display: flex;
@@ -194,8 +282,8 @@
     }
 
     .chat-avatar {
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       object-fit: cover;
       background: var(--border-color);
@@ -221,36 +309,16 @@
 
     .chat-msg .sender {
       font-weight: 700;
-      font-size: 0.7rem;
-      margin-bottom: 0.2rem;
+      font-size: 0.68rem;
+      margin-bottom: 0.15rem;
       opacity: 0.9;
     }
 
     .chat-msg .meta {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       opacity: 0.7;
       text-align: right;
-      margin-top: 0.25rem;
-    }
-
-    .chat-msg .actions {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: flex-end;
-      margin-top: 0.25rem;
-    }
-
-    .chat-msg .action-btn {
-      background: none;
-      border: none;
-      color: inherit;
-      font-size: 0.65rem;
-      cursor: pointer;
-      padding: 0;
-      margin: 0;
-      opacity: 0.8;
-      text-decoration: underline;
-      width: auto;
+      margin-top: 0.2rem;
     }
 
     .chat-input-container {
@@ -268,6 +336,51 @@
       margin-bottom: 0;
     }
 
+    /* MITARBEITER LISTE */
+    .user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      background: rgba(0,0,0,0.15);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .user-card:hover {
+      border-color: var(--accent-color);
+    }
+
+    .user-card img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-card .info {
+      flex: 1;
+    }
+
+    .user-card .info .name {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .user-card .info .email {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* PROFILE PREVIEW */
     .profile-preview {
       display: flex;
       align-items: center;
@@ -283,25 +396,33 @@
       border: 2px solid var(--accent-color);
     }
 
+    /* FOOTER NAVIGATION */
     nav {
-      position: sticky;
+      position: fixed;
       bottom: 0;
+      left: 0;
+      right: 0;
       background: var(--card-bg);
       border-top: 1px solid var(--border-color);
       display: flex;
       justify-content: space-around;
       padding: 0.5rem 0;
+      z-index: 100;
     }
 
     nav button {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 500;
-      padding: 0.5rem;
+      padding: 0.4rem;
       margin: 0;
       width: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
     }
 
     nav button.active {
@@ -318,17 +439,38 @@
   </header>
 
   <main>
-    <!-- TAB 1: Schichten -->
+    <!-- TAB 1: Startseite & Schichten -->
     <div id="tab-schichten" class="tab-content active">
       <div class="card">
-        <h2>Schichtverwaltung</h2>
+        <h2>Startseite & Schicht-Dashboard</h2>
+        
+        <div class="dashboard-grid">
+          <div class="dash-stat">
+            <div class="num" id="dashShiftStatus">Inaktiv</div>
+            <div class="label">Schicht-Status</div>
+          </div>
+          <div class="dash-stat">
+            <div class="num" id="dashTotalCount">0</div>
+            <div class="label">Erfasste Fahrgäste</div>
+          </div>
+        </div>
+
         <label for="shiftSelect">Aktive Schicht wählen</label>
         <select id="shiftSelect">
           <option>Frühschicht (06:00 - 14:00)</option>
           <option>Spätschicht (14:00 - 22:00)</option>
           <option>Nachtschicht (22:00 - 06:00)</option>
+          <option>Sonderschicht / SEV</option>
         </select>
         <button id="btnStartShift">Schicht starten</button>
+      </div>
+
+      <div class="card">
+        <h2>Schnellzugriff</h2>
+        <div style="display: flex; gap: 0.5rem;">
+          <button onclick="switchTab('zaehlungen', document.getElementById('btnNavZaehlungen'))">Fahrgast Zählen</button>
+          <button onclick="switchTab('chat', document.getElementById('btnNavChat'))" style="background: var(--border-color);">Team-Chat</button>
+        </div>
       </div>
     </div>
 
@@ -341,16 +483,24 @@
           <span class="counter-display" id="countDisplay">0</span>
           <button class="counter-btn" id="btnPlus">+</button>
         </div>
+        <button id="btnResetCount" style="background: #dc2626; margin-top: 1rem;">Zähler zurücksetzen</button>
       </div>
     </div>
 
-    <!-- TAB 3: Team Chat -->
+    <!-- TAB 3: Team & Privat-Chat -->
     <div id="tab-chat" class="tab-content">
       <div class="card">
-        <h2>Team-Chat</h2>
-        <div class="chat-box" id="chatBox">
-          <p style="color: var(--text-muted); font-size: 0.875rem;">Lade Nachrichten...</p>
+        <h2 id="chatTitle">Team-Chat (Öffentlich)</h2>
+        
+        <div class="chat-selector">
+          <button id="btnChatPublic" class="active">Öffentlich</button>
+          <button id="btnChatPrivateSelect">Privat-Chat wählen</button>
         </div>
+
+        <div class="chat-box" id="chatBox">
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Lade Nachrichten...</p>
+        </div>
+        
         <div class="chat-input-container">
           <input type="text" id="chatInput" placeholder="Nachricht schreiben...">
           <button id="btnSendChat">Senden</button>
@@ -358,7 +508,18 @@
       </div>
     </div>
 
-    <!-- TAB 4: Profil & Einstellungen -->
+    <!-- TAB 4: Mitarbeiter (Direkt-Chats) -->
+    <div id="tab-mitarbeiter" class="tab-content">
+      <div class="card">
+        <h2>Mitarbeiter & Kontakte</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Klicke auf einen Mitarbeiter, um einen privaten Chat zu starten.</p>
+        <div class="user-list" id="userList">
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Lade Teammitglieder...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: Profil & Einstellungen -->
     <div id="tab-profil" class="tab-content">
       <div class="card">
         <h2>Profil & Einstellungen</h2>
@@ -382,38 +543,43 @@
             </div>
           </div>
 
-          <label for="profileName">Anzeigename im Chat</label>
-          <input type="text" id="profileName" placeholder="Dein Name (z.B. Max Mustermann)">
+          <label for="profileName">Anzeigename</label>
+          <input type="text" id="profileName" placeholder="Dein Name">
 
-          <label for="profileAvatarUrl">Profilbild URL (Link zu einem Bild)</label>
+          <label for="profileAvatarUrl">Profilbild URL</label>
           <input type="text" id="profileAvatarUrl" placeholder="https://beispiel.de/bild.jpg">
 
           <button id="btnSaveProfile">Profil speichern</button>
-          <button id="btnLogout" style="background: #dc2626; margin-top: 0.5rem;">Abmelden</button>
+          <button id="btnLogout" style="background: #dc2626; margin-top: 0.25rem;">Abmelden</button>
         </div>
 
-        <p id="authStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.75rem;"></p>
+        <p id="authStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
 
         <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;">
 
-        <label for="themeSelect">Design-Theme wählen</label>
+        <h2>App-Design & Themes</h2>
+        <label for="themeSelect">Design wählen</label>
         <select id="themeSelect">
-          <option value="dark">Standard Clean (Dark)</option>
-          <option value="light">Standard Clean (Light)</option>
-          <option value="neon">Neon Glow</option>
+          <option value="dark">Dark Slate (Klassisch)</option>
+          <option value="light">Light Clean (Hell)</option>
+          <option value="neon">Neon Glow (Grell)</option>
+          <option value="cyberpunk">Cyberpunk 2077</option>
+          <option value="ocean">Oceanic Deep (Blau)</option>
+          <option value="emerald">Emerald Bus (Grün)</option>
         </select>
       </div>
     </div>
   </main>
 
   <nav>
-    <button class="nav-btn active" id="btnNavSchichten">Schichten</button>
-    <button class="nav-btn" id="btnNavZaehlungen">Zählungen</button>
+    <button class="nav-btn active" id="btnNavSchichten">Start</button>
+    <button class="nav-btn" id="btnNavZaehlungen">Zählung</button>
     <button class="nav-btn" id="btnNavChat">Chat</button>
+    <button class="nav-btn" id="btnNavMitarbeiter">Team</button>
     <button class="nav-btn" id="btnNavProfil">Profil</button>
   </nav>
 
-  <!-- Navigation JS (Garantiert fehlerfrei vor allen Modulen) -->
+  <!-- NAVIGATION SCRIPT -->
   <script>
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -431,14 +597,15 @@
     document.getElementById('btnNavSchichten').onclick = function() { switchTab('schichten', this); };
     document.getElementById('btnNavZaehlungen').onclick = function() { switchTab('zaehlungen', this); };
     document.getElementById('btnNavChat').onclick = function() { switchTab('chat', this); };
+    document.getElementById('btnNavMitarbeiter').onclick = function() { switchTab('mitarbeiter', this); };
     document.getElementById('btnNavProfil').onclick = function() { switchTab('profil', this); };
   </script>
 
-  <!-- Firebase SDK Modules & App Logic -->
+  <!-- FIREBASE MODULE & LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAvL5KTwN7h-fkc-tlHD7hKQRDzjRkS1Oo",
@@ -455,41 +622,57 @@
     const db = getFirestore(app);
 
     let currentUser = null;
-    let lastMessageCount = 0;
+    let activeChatTarget = "public"; // "public" or recipientUid
+    let activeChatTargetName = "Team-Chat (Öffentlich)";
 
+    // UI ELEMENTS
     const authStatus = document.getElementById("authStatus");
     const chatBox = document.getElementById("chatBox");
     const chatInput = document.getElementById("chatInput");
     const btnSendChat = document.getElementById("btnSendChat");
-    const loggedOutSection = document.getElementById("loggedOutSection");
-    const loggedInSection = document.getElementById("loggedInSection");
-    const profileUserEmail = document.getElementById("profileUserEmail");
-    const profileName = document.getElementById("profileName");
-    const profileAvatarUrl = document.getElementById("profileAvatarUrl");
-    const profilePreviewImg = document.getElementById("profilePreviewImg");
+    const chatTitle = document.getElementById("chatTitle");
+    const btnChatPublic = document.getElementById("btnChatPublic");
+    const btnChatPrivateSelect = document.getElementById("btnChatPrivateSelect");
+    const userList = document.getElementById("userList");
 
-    function playNotificationSound() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-      } catch (e) {
-        console.log("Audio precluded");
-      }
-    }
+    const countDisplay = document.getElementById("countDisplay");
+    const dashTotalCount = document.getElementById("dashTotalCount");
+    const dashShiftStatus = document.getElementById("dashShiftStatus");
+    let currentCount = 0;
 
+    // FAHRGAST ZÄHLER
+    document.getElementById("btnPlus").addEventListener("click", () => {
+      currentCount++;
+      countDisplay.textContent = currentCount;
+      dashTotalCount.textContent = currentCount;
+    });
+
+    document.getElementById("btnMinus").addEventListener("click", () => {
+      if (currentCount > 0) currentCount--;
+      countDisplay.textContent = currentCount;
+      dashTotalCount.textContent = currentCount;
+    });
+
+    document.getElementById("btnResetCount").addEventListener("click", () => {
+      currentCount = 0;
+      countDisplay.textContent = "0";
+      dashTotalCount.textContent = "0";
+    });
+
+    // SCHICHT STARTEN
+    document.getElementById("btnStartShift").addEventListener("click", () => {
+      const shiftVal = document.getElementById("shiftSelect").value;
+      dashShiftStatus.textContent = "Aktiv";
+      dashShiftStatus.style.color = "var(--accent-color)";
+      alert("Schicht gestartet: " + shiftVal);
+    });
+
+    // THEME SWITCHER
     document.getElementById("themeSelect").addEventListener("change", (e) => {
       document.body.setAttribute("data-theme", e.target.value);
     });
 
+    // AUTHENTICATION & PROFILE
     document.getElementById("btnLogin").addEventListener("click", async () => {
       const email = document.getElementById("authEmail").value;
       const pass = document.getElementById("authPassword").value;
@@ -505,8 +688,14 @@
       const email = document.getElementById("authEmail").value;
       const pass = document.getElementById("authPassword").value;
       try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        authStatus.textContent = "Konto erfolgreich erstellt!";
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await setDoc(doc(db, "users", res.user.uid), {
+          uid: res.user.uid,
+          email: email,
+          displayName: email.split('@')[0],
+          photoURL: ""
+        });
+        authStatus.textContent = "Konto erstellt!";
       } catch (err) {
         authStatus.textContent = "Fehler: " + err.message;
       }
@@ -514,129 +703,165 @@
 
     document.getElementById("btnLogout").addEventListener("click", async () => {
       await signOut(auth);
-      authStatus.textContent = "Erfolgreich abgemeldet.";
+      authStatus.textContent = "Abgemeldet.";
     });
 
     document.getElementById("btnSaveProfile").addEventListener("click", async () => {
       if (!auth.currentUser) return;
       try {
-        const newName = profileName.value.trim();
-        const newPhoto = profileAvatarUrl.value.trim();
+        const newName = document.getElementById("profileName").value.trim();
+        const newPhoto = document.getElementById("profileAvatarUrl").value.trim();
         await updateProfile(auth.currentUser, {
           displayName: newName || null,
           photoURL: newPhoto || null
         });
-        authStatus.textContent = "Profil erfolgreich gespeichert!";
-        profilePreviewImg.src = newPhoto || "https://via.placeholder.com/60";
+        await setDoc(doc(db, "users", auth.currentUser.uid), {
+          uid: auth.currentUser.uid,
+          email: auth.currentUser.email,
+          displayName: newName || auth.currentUser.email.split('@')[0],
+          photoURL: newPhoto || ""
+        }, { merge: true });
+
+        authStatus.textContent = "Profil gespeichert!";
+        document.getElementById("profilePreviewImg").src = newPhoto || "https://via.placeholder.com/60";
       } catch (err) {
         authStatus.textContent = "Fehler beim Speichern: " + err.message;
       }
     });
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       if (user) {
         authStatus.textContent = `Angemeldet als: ${user.email}`;
-        loggedOutSection.style.display = "none";
-        loggedInSection.style.display = "block";
-        profileUserEmail.textContent = user.email;
-        profileName.value = user.displayName || "";
-        profileAvatarUrl.value = user.photoURL || "";
-        if (user.photoURL) {
-          profilePreviewImg.src = user.photoURL;
-        }
+        document.getElementById("loggedOutSection").style.display = "none";
+        document.getElementById("loggedInSection").style.display = "block";
+        document.getElementById("profileUserEmail").textContent = user.email;
+        document.getElementById("profileName").value = user.displayName || "";
+        document.getElementById("profileAvatarUrl").value = user.photoURL || "";
+        if (user.photoURL) document.getElementById("profilePreviewImg").src = user.photoURL;
+
+        // Ensure User Doc exists
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || user.email.split('@')[0],
+          photoURL: user.photoURL || ""
+        }, { merge: true });
+
       } else {
         authStatus.textContent = "Nicht angemeldet";
-        loggedOutSection.style.display = "block";
-        loggedInSection.style.display = "none";
+        document.getElementById("loggedOutSection").style.display = "block";
+        document.getElementById("loggedInSection").style.display = "none";
       }
     });
 
-    // CHAT ENGINE
-    const chatRef = collection(db, "chat_messages");
-    const chatQuery = query(chatRef, orderBy("createdAt", "asc"));
-
-    onSnapshot(chatQuery, (snapshot) => {
-      chatBox.innerHTML = "";
-      let msgCount = 0;
-
+    // MITARBEITER LISTE LADEN
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      userList.innerHTML = "";
       snapshot.forEach((docSnap) => {
-        msgCount++;
-        const data = docSnap.data();
-        const msgId = docSnap.id;
-        const isMe = currentUser && currentUser.uid === data.senderUid;
+        const uData = docSnap.data();
+        if (currentUser && uData.uid === currentUser.uid) return; // Skip self
 
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+        const userCard = document.createElement("div");
+        userCard.className = "user-card";
+        const avatar = uData.photoURL || "https://via.placeholder.com/40";
+        const name = uData.displayName || uData.email.split('@')[0];
 
-        const senderName = data.senderName || "Anonym";
-        const avatarUrl = data.senderAvatar || "https://via.placeholder.com/30";
-        const timeStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
-        const editedTag = data.isEdited ? " (bearbeitet)" : "";
+        userCard.innerHTML = `
+          <img src="${avatar}" alt="Avatar">
+          <div class="info">
+            <div class="name">${name}</div>
+            <div class="email">${uData.email}</div>
+          </div>
+          <button style="width: auto; padding: 0.4rem 0.8rem; margin: 0; font-size: 0.75rem;">Chatten</button>
+        `;
 
-        let actionsContainer = document.createElement("div");
-        actionsContainer.className = "actions";
+        userCard.onclick = () => {
+          activeChatTarget = uData.uid;
+          activeChatTargetName = "Privat: " + name;
+          chatTitle.textContent = activeChatTargetName;
+          btnChatPublic.classList.remove("active");
+          btnChatPrivateSelect.classList.add("active");
+          btnChatPrivateSelect.textContent = name;
+          switchTab('chat', document.getElementById('btnNavChat'));
+          loadChatMessages();
+        };
 
-        if (isMe) {
-          const btnEdit = document.createElement("button");
-          btnEdit.className = "action-btn";
-          btnEdit.textContent = "Bearbeiten";
-          btnEdit.onclick = async () => {
-            const newText = prompt("Nachricht bearbeiten:", data.text);
-            if (newText && newText.trim() !== "" && newText !== data.text) {
-              await updateDoc(doc(db, "chat_messages", msgId), { text: newText.trim(), isEdited: true });
-            }
-          };
-
-          const btnDelete = document.createElement("button");
-          btnDelete.className = "action-btn";
-          btnDelete.textContent = "Löschen";
-          btnDelete.onclick = async () => {
-            if (confirm("Möchtest du diese Nachricht löschen?")) {
-              await deleteDoc(doc(db, "chat_messages", msgId));
-            }
-          };
-
-          actionsContainer.appendChild(btnEdit);
-          actionsContainer.appendChild(btnDelete);
-        }
-
-        const avatarImg = document.createElement("img");
-        avatarImg.className = "chat-avatar";
-        avatarImg.src = avatarUrl;
-        avatarImg.alt = "Avatar";
-
-        const bubbleContent = document.createElement("div");
-        bubbleContent.className = "chat-bubble-content";
-
-        const senderDiv = document.createElement("div");
-        senderDiv.className = "sender";
-        senderDiv.textContent = senderName;
-
-        const textDiv = document.createElement("div");
-        textDiv.textContent = data.text;
-
-        const metaDiv = document.createElement("div");
-        metaDiv.className = "meta";
-        metaDiv.textContent = timeStr + editedTag;
-
-        bubbleContent.appendChild(senderDiv);
-        bubbleContent.appendChild(textDiv);
-        bubbleContent.appendChild(metaDiv);
-        if (isMe) bubbleContent.appendChild(actionsContainer);
-
-        msgDiv.appendChild(avatarImg);
-        msgDiv.appendChild(bubbleContent);
-
-        chatBox.appendChild(msgDiv);
+        userList.appendChild(userCard);
       });
-
-      if (lastMessageCount > 0 && msgCount > lastMessageCount) {
-        playNotificationSound();
-      }
-      lastMessageCount = msgCount;
-      chatBox.scrollTop = chatBox.scrollHeight;
     });
+
+    // CHAT ENGINE SWITCHER
+    btnChatPublic.onclick = () => {
+      activeChatTarget = "public";
+      activeChatTargetName = "Team-Chat (Öffentlich)";
+      chatTitle.textContent = activeChatTargetName;
+      btnChatPublic.classList.add("active");
+      btnChatPrivateSelect.classList.remove("active");
+      loadChatMessages();
+    };
+
+    let chatUnsubscribe = null;
+
+    function loadChatMessages() {
+      if (chatUnsubscribe) chatUnsubscribe();
+
+      const chatRef = collection(db, "chat_messages");
+      const chatQuery = query(chatRef, orderBy("createdAt", "asc"));
+
+      chatUnsubscribe = onSnapshot(chatQuery, (snapshot) => {
+        chatBox.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const msgId = docSnap.id;
+          
+          // Filter public vs private
+          if (activeChatTarget === "public") {
+            if (data.target && data.target !== "public") return;
+          } else {
+            // Private chat filtering
+            const isPrivateMatch = (data.senderUid === currentUser?.uid && data.target === activeChatTarget) ||
+                                   (data.senderUid === activeChatTarget && data.target === currentUser?.uid);
+            if (!isPrivateMatch) return;
+          }
+
+          const isMe = currentUser && currentUser.uid === data.senderUid;
+          const msgDiv = document.createElement("div");
+          msgDiv.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+
+          const senderName = data.senderName || "Anonym";
+          const avatarUrl = data.senderAvatar || "https://via.placeholder.com/28";
+          const timeStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+
+          const avatarImg = document.createElement("img");
+          avatarImg.className = "chat-avatar";
+          avatarImg.src = avatarUrl;
+
+          const bubbleContent = document.createElement("div");
+          bubbleContent.className = "chat-bubble-content";
+
+          const senderDiv = document.createElement("div");
+          senderDiv.className = "sender";
+          senderDiv.textContent = senderName;
+
+          const textDiv = document.createElement("div");
+          textDiv.textContent = data.text;
+
+          const metaDiv = document.createElement("div");
+          metaDiv.className = "meta";
+          metaDiv.textContent = timeStr;
+
+          bubbleContent.appendChild(senderDiv);
+          bubbleContent.appendChild(textDiv);
+          bubbleContent.appendChild(metaDiv);
+
+          msgDiv.appendChild(avatarImg);
+          msgDiv.appendChild(bubbleContent);
+          chatBox.appendChild(msgDiv);
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+    }
 
     async function sendMessage() {
       const text = chatInput.value.trim();
@@ -647,13 +872,13 @@
       const senderAvatar = currentUser ? (currentUser.photoURL || "") : "";
 
       try {
-        await addDoc(chatRef, {
+        await addDoc(collection(db, "chat_messages"), {
           text: text,
           senderName: senderName,
           senderUid: senderUid,
           senderAvatar: senderAvatar,
-          createdAt: serverTimestamp(),
-          isEdited: false
+          target: activeChatTarget,
+          createdAt: serverTimestamp()
         });
         chatInput.value = "";
       } catch (err) {
@@ -665,6 +890,9 @@
     chatInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") sendMessage();
     });
+
+    // Initial Load
+    loadChatMessages();
   </script>
 </body>
 </html>
