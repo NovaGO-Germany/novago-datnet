@@ -1,568 +1,1412 @@
-import os, textwrap, zipfile, json
 
-root = "/mnt/data/novago-datnet"
-os.makedirs(root + "/src", exist_ok=True)
-os.makedirs(root + "/functions/src", exist_ok=True)
 
-files = {}
+    Name: NovaGO DatNet / Funktionen: SEV-Funktionen, Schichten & Verkehrsmittel
 
-files["package.json"] = r'''{
-  "name": "novago-datnet",
-  "private": true,
-  "version": "3.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "firebase": "^11.10.0",
-    "lucide-react": "^0.468.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
-  },
-  "devDependencies": {
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.0",
-    "@vitejs/plugin-react": "^4.6.0",
-    "typescript": "~5.8.3",
-    "vite": "^6.3.5"
-  }
-}'''
+Hallo! Ich möchte meine eigene Web-App erstellen, . Ich habe keine Programmierkenntnisse
 
-files["index.html"] = r'''<!doctype html>
+    Flexible Verkehrsmittelauswahl: Bei der Fahrterstellung kann zwischen Zug, SEV, Bus und Sonderfahrt gewählt werden.
+
+    Dynamische Zählungsanpassung: Die Eingabefelder passen sich automatisch an das gewählte Verkehrsmittel an (z. B. „Personen im Zug“, „Personen im Bus“).
+
+    Steuerung der SEV-Statusanzeige: Ein zentrales Feld bei der Schichterstellung legt fest, welcher Status angezeigt wird (z. B. „Fahrt wurde als SEV fortgesetzt“ oder „Fahrt fährt/fuhr als SEV“) und ob eine erneute Fahrt erfolgt.
+
+    Live-Aktivierung im Betrieb: Der SEV-Modus kann während einer laufenden Zugfahrt direkt aktiviert werden, woraufhin sich der Status zu „Fahrt wurde als SEV fortgesetzt“ aktualisiert.
+
+    Haltestellenbearbeitung mit Markierung: Haltestellennamen im SEV-Modus lassen sich im laufenden Betrieb bearbeiten. Manuell geänderte Haltestellen werden optisch rot hervorgehoben.
+
+    Visuelle Schichtänderungen: Nachträgliche Anpassungen innerhalb einer Schicht werden rot markiert (ausgenommen reine Rechtschreibkorrepturen).
+
+    Mehrtägige Schichtplanung: Schichten über mehrere Tage (z. B. 31.08. bis 05.09.) werden für alle Einzeltage im System eingetragen. Für jeden Tag steht eine freie Zeitverfügung zur Verfügung.
+
+    Eindeutige Zuweisung: Eine doppelte Auswahl derselben Person innerhalb einer Schicht wird systemseitig unterbunden.
+
+2. Zählungen (Protokollierung & Steuerung)
+
+    Personenangabe & Personalauswahl: Erfassung der Fahrgastzahlen inkl. Pflichtauswahl des durchführenden Personals (einzelne oder mehrere Zähler).
+
+    Horizontaler Haltestellen-Swipe: Bei der Zählung kann unten nach rechts und links gewischt/gescrollt werden, um die einzelnen Haltestellen nacheinander und übersichtlich anzuzeigen.
+
+    Exklusiver Zählmodus: Mehrere Personen können einer Fahrt zugewiseden werden, jedoch kann immer nur eine Person gleichzeitig das Eingabefenster für die Zählung öffnen.
+
+    Zwischenspeicherung & Wiederaufnahme: Das Zählungsfenster kann jederzeit verlassen werden. Die eingegebenen Daten werden automatisch gespeichert und der Wiedereinstieg ist direkt über „Aktuelle Zählungen“ bei Fahrten möglich.
+
+    Globale Einsehbarkeit: Nach Abschluss einer Zählung sind die Endergebnisse für alle autorisierten Nutzer im Bereich Fahrten oder Zählungen sichtbar.
+
+    Direkte Re-Aktivierung: Fehlerfreie Rückkehr ins Eingabefeld auch bei bereits fertiggestellten Zählungen aus der Übersicht.
+
+3. Statistik-Modul (Zeitgesteuert ab 01.01.2027)
+
+    Eigenständiger Bereich: Ein dedizierter Statistik-Abschnitt für umfassende Betriebsauswertungen.
+
+    Zeitgesteuerter Zähl- und Freischaltstart: Die UI-Ansicht ist bis zum 01.01.2027 gesperrt. Erst ab diesem Datum beginnt das System offiziell mit der Erfassung und Zählung der Statistikdaten (frühere Daten fließen nicht ein).
+
+    Ausfall- & Korrekturübernahme:
+
+        Fällt eine Schicht aus, wird sie verkürzt oder verlängert, fließt genau dieser korrigierte Ist-Wert in die Statistik ein.
+
+        Zählungsdaten werden erst nach dem endgültigen Beenden der Zählung übernommen.
+
+    Mehrdimensionale Filterung: Auswertungen der Fahrgastzahlen und Einsatzdauern lassen sich filtern nach Einzelnen Personen, Teams oder Alle Mitarbeiter (Gesamtsicht).
+
+4. Authentifizierung, Benutzer- & Rechtesystem
+
+    Erweiterter Registrierungs- & Bestätigungsprozess:
+
+        Registrierte Benutzer müssen nachträglich manuell durch dich per E-Mail freigeschaltet/bestätigt werden.
+
+        Neu: Bei der Bestätigung wird dem neuen Benutzer direkt der entsprechende Rang (z. B. User, Admin, Owner) zugewiesen.
+
+    Eigenes Owner-Menü (Verwaltungsbereich):
+
+        Exklusiver Systembereich nur für dich als Owner zur zentralen Verwaltung der gesamten App-Instanz, Systemkonfigurationen und Benutzerrechte.
+
+    Team-Übersichtsmenü:
+
+        Komplette Auflistung des gesamten Teams mit detaillierter Ansicht aller zugewiesenen Funktionen, Positionen und aktuellen Aufgaben/Schichten.
+
+        Direkt-Chat: Aus der Teamliste heraus kann per Klick direkt ein 1-zu-1-Chat mit dem jeweiligen Teammitglied gestartet werden.
+
+    Nutzerprofil:
+
+        Personalisiertes Benutzerprofil für jeden Nutzer zur Einstellung und Anpassung des eigenen Namen sowie des Profilbildes.
+
+    Erweiterte Sperrfunktion (Admin & Owner):
+
+        Benutzer mit dem Rang Admin oder Owner besitzen die Berechtigung, Konten zu sperren (temporär oder dauerhaft).
+
+    Authentifizierter PIN-Reset: Abgesicherter PIN-Reset-Request im Anmeldefenster mit direkter Backend-Validierung.
+
+    Erweiterte Account-Erkennung: Zuverlässige Erfassung und Prüfung registrierter Benutzerkonten beim Login.
+
+    Geofencing & Domain-Schutz (Whitelist): Ausländliche Telefonnummern und E-Mail-Adressen werden blockiert. Ausgenommen sind ausschließlich Owner unter Joshua's Workplace.
+
+    Automatischer Sicherheits-Logout: Erhöhter Schutz durch erzwungene Abmeldung aller Benutzer alle 2 Tage.
+
+5. Benutzeroberfläche, Animationen & Design (UI/UX)
+
+    Start- & Ladebildschirm: Integrierter, ansprechender Ladebildschirm (Splash Screen) sowie ein gestalteter Startbildschirm beim App-Aufruf.
+
+    Erweiterte Theme-Auswahl: Der Abschnitt „Design“ bietet Themes wie:
+
+        Standard Clean
+
+        Dark Mode
+
+        Retro Schulheft
+
+        Neon
+
+        Weitere Themes (Glas, Natur, Modern etc.)
+
+    Bereinigte Menüstruktur: Der alte Abschnitt „Änderungen“ wurde vollständig entfernt.
+
+6. Kommunikation & Chats
+
+    Direkt- & Einzelchats: Schnellzugriff auf 1-zu-1-Unterhaltungen (auch direkt aus dem Team-Menü).
+
+    Teamchats: Dedizierte Gruppenchats für Teams, Abteilungen oder Schichtgruppen zur schnellen operativen Abstimmung. erstelle den code für github
+…
+Eingefügter Text.txtDokument
+es gibt bereits eine verknüpfung mit firebase: code der davor drin war:
+
+Perfekt! Dann verwenden wir deine bereits vorhandene Firebase-Verbindung. Wir bauen NovaGO DatNet darauf auf und verwenden keine zusätzliche Supabase-Datenbank.
+
+Dein bisheriger Code ist allerdings nach dem Doppelpunkt nicht bei mir angekommen.
+
+Bitte lade deinen bisherigen Projektcode als ZIP-Datei hoch oder füge ihn hier ein.
+
+Ich werde dann:
+
+    Deinen bestehenden Code und die Firebase-Verbindung beibehalten.
+
+    Alle gewünschten Funktionen integrieren.
+
+    Das Design und die Navigation überarbeiten.
+
+    Firebase Authentication, Firestore und gegebenenfalls Storage nutzen.
+
+    Das Projekt vollständig für GitHub vorbereiten.
+
+Wichtig: Bitte keine privaten Service-Account-Schlüssel oder Passwörter hochladen.
+
+Mein Ziel ist, dass du am Ende ein möglichst vollständiges, startfertiges NovaGO DatNet bekommst, ohne deine bisherige Firebase-Einrichtung zu verlieren.
+erstelle alles von der liste und gebe mir den fertigen code, vergesse ein modern braun weißes degins nicht!
+NovaGO DatNet – Complete Edition
+
+Firebase bleibt erhalten
+ GitHub-Projekt
+
+Ich habe deinen bisherigen HTML-Code als Ausgangspunkt berücksichtigt. Wir behalten deine bestehende Firebase-Projektverbindung novago-datnet bei und bauen die Anwendung darauf auf.
+
+Das neue Design bekommt einen eigenen Stil:
+NOVAGO DATNET
+BROWN EDITION
+Willkommen zurück.
+
+Dein Betrieb. Dein Team. Deine Übersicht.
+12
+
+Aktive Schichten
+08
+
+Offene Zählungen
+
+Schichten
+
+Fahrten
+
+Team
+
+Gestaltungsvorschau – keine echten Betriebsdaten.
+
+Dein fertiges NovaGO-DatNet-Projekt
+
+ZIP · 16 Dateien · HTML, CSS, JavaScript, Firebase Functions und Regeln
+Erstellt
+
+ Projekt herunterladen
+
+NovaGO DatNet – Brown Edition herunterladen
+
+Das ZIP enthält das vollständige Projektverzeichnis einschließlich Firebase-Konfiguration und Einrichtungsanleitung.
+Was enthalten ist?
+
+Bereich
+	
+
+Umsetzung
+
+Braun-weißes Design
+	
+
+Enthalten
+
+Schichten & Mehrtagesplanung
+	
+
+Enthalten
+
+Zug, Bus, SEV, Sonderfahrt
+	
+
+Enthalten
+
+SEV-Live-Aktivierung
+	
+
+Enthalten
+
+Fahrgastzählungen
+	
+
+Enthalten
+
+Zwischenspeicherung & Zählsperre
+	
+
+Enthalten
+
+Statistik ab 01.01.2027
+	
+
+Enthalten
+
+Benutzerrollen & Freigaben
+	
+
+Enthalten
+
+Owner- und Admin-Verwaltung
+	
+
+Enthalten
+
+Teamübersicht & Einzelchats
+	
+
+Enthalten
+
+Gruppen- und Teamchats
+	
+
+Enthalten
+
+Profilbilder & Themes
+	
+
+Enthalten
+
+48-Stunden-Sitzungsschutz
+	
+
+Enthalten
+
+PIN-Reset-Anfragen
+	
+
+Enthalten
+So bringst du die App online
+
+    ZIP herunterladen und entpacken.
+
+    Auf GitHub ein privates Repository erstellen.
+
+    Alle Projektdateien hochladen.
+
+    Die README.md öffnen und die Firebase-Einrichtung Schritt für Schritt durchführen.
+
+    Anschließend über Firebase Hosting veröffentlichen.
+
+JavaScript-Syntaxprüfung bestanden
+
+Wichtig: Der Code ist erstellt und die JavaScript-Syntax wurde geprüft. Er ist noch nicht in deinem Firebase-Projekt deployed oder mit echten Benutzerkonten vollständig getestet. Vor dem echten Betrieb müssen insbesondere Firebase-Regeln, Cloud Functions, Owner-Ersteinrichtung und die Sicherheitsfunktionen eingerichtet und getestet werden.
+
+Du musst also nicht bei null anfangen. Die vorhandene Firebase-Verbindung zu novago-datnet bleibt Grundlage des Projekts.
+
+
+<!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#493629" />
-    <meta name="description" content="NovaGO DatNet – Schicht-, Fahrten- und Zählungsverwaltung" />
-    <title>NovaGO DatNet</title>
-  </head>
-  <body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body>
-</html>'''
-
-files[".env.example"] = r'''VITE_FIREBASE_API_KEY=DEIN_FIREBASE_API_KEY
-VITE_FIREBASE_AUTH_DOMAIN=novago-datnet.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=novago-datnet
-VITE_FIREBASE_STORAGE_BUCKET=novago-datnet.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=1083028285400
-VITE_FIREBASE_APP_ID=1:1083028285400:web:549b2727dbbae306b174ad
-VITE_FIREBASE_MEASUREMENT_ID=G-GHCKHM3KC5
-
-# Optional: callable Cloud Functions Region
-VITE_FIREBASE_FUNCTIONS_REGION=europe-west3
-'''
-
-files["vite.config.ts"] = r'''import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-export default defineConfig({ plugins: [react()] });
-'''
-files["tsconfig.json"] = r'''{
-  "compilerOptions": {
-    "target": "ES2022", "useDefineForClassFields": true, "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext", "skipLibCheck": true, "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true, "resolveJsonModule": true, "isolatedModules": true,
-    "noEmit": true, "jsx": "react-jsx", "strict": true, "noUnusedLocals": false,
-    "noUnusedParameters": false, "noFallthroughCasesInSwitch": true
-  },
-  "include": ["src"]
-}
-'''
-files["src/main.tsx"] = r'''import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./styles.css";
-ReactDOM.createRoot(document.getElementById("root")!).render(<React.StrictMode><App /></React.StrictMode>);
-'''
-
-files["src/firebase.ts"] = r'''import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { getFunctions } from "firebase/functions";
-
-const config = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
-};
-if (!config.apiKey || !config.projectId) throw new Error("Firebase-Konfiguration fehlt. Bitte .env.local anlegen.");
-const app = initializeApp(config);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export const functions = getFunctions(app, import.meta.env.VITE_FIREBASE_FUNCTIONS_REGION || "europe-west3");
-'''
-
-files["src/App.tsx"] = r'''import { useEffect, useMemo, useState } from "react";
-import {
-  onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  signOut, updateProfile, User
-} from "firebase/auth";
-import {
-  addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp,
-  setDoc, updateDoc, where, writeBatch, runTransaction, Timestamp
-} from "firebase/firestore";
-import { httpsCallable } from "firebase/functions";
-import { auth, db, functions, storage } from "./firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import {
-  Activity, CalendarDays, CarFront, ChartNoAxesCombined, ClipboardList, LogOut,
-  Menu, MessageCircle, Moon, Settings, ShieldCheck, TrainFront, Users, Bus,
-  Home, UserRound, Plus, Play, CheckCircle2, Lock, Send, ChevronRight, Sun
-} from "lucide-react";
-
-type Role = "pending" | "user" | "admin" | "owner";
-type Profile = { uid: string; email: string; displayName: string; photoURL?: string; role: Role; approved: boolean; locked?: boolean; team?: string };
-type Shift = { id: string; title: string; startDate: string; endDate: string; startTime: string; endTime: string; assignedUids: string[]; dailyAvailability?: Record<string,string>; sevMode?: string; status: string; notes?: string; createdBy: string; };
-type Trip = { id: string; title: string; transport: string; date: string; stops: string[]; status: string; sevActive?: boolean; sevStatus?: string; repeatTrip?: boolean; counters?: Record<string,number>; };
-type Count = { id: string; tripId: string; tripTitle: string; date: string; stopCounts: Record<string,number>; people: string[]; status: "active"|"completed"; lockOwner?: string; lockName?: string; updatedAt?: unknown; };
-
-const nav = [
-  ["home","Übersicht",Home],["shifts","Schichten",CalendarDays],["trips","Fahrten",TrainFront],
-  ["counts","Zählungen",ClipboardList],["stats","Statistik",ChartNoAxesCombined],
-  ["team","Team",Users],["chat","Chats",MessageCircle],["settings","Einstellungen",Settings]
-] as const;
-const today = () => new Date().toLocaleDateString("en-CA");
-const fmt = (s: string) => new Date(`${s}T12:00:00`).toLocaleDateString("de-DE");
-
-export default function App() {
-  const [user,setUser] = useState<User|null>(null);
-  const [profile,setProfile] = useState<Profile|null>(null);
-  const [page,setPage] = useState("home");
-  const [theme,setTheme] = useState(localStorage.getItem("ng-theme") || "brown");
-  const [shifts,setShifts] = useState<Shift[]>([]);
-  const [trips,setTrips] = useState<Trip[]>([]);
-  const [counts,setCounts] = useState<Count[]>([]);
-  const [people,setPeople] = useState<Profile[]>([]);
-  const [messages,setMessages] = useState<any[]>([]);
-  const [chatTarget,setChatTarget] = useState("team");
-  const [notice,setNotice] = useState("");
-  const [busy,setBusy] = useState(false);
-  const [showAuth,setShowAuth] = useState(true);
-  const [countOpen,setCountOpen] = useState<Count|null>(null);
-  const [countValues,setCountValues] = useState<Record<string,number>>({});
-  const [selectedTrip,setSelectedTrip] = useState<Trip|null>(null);
-
-  useEffect(()=>{ document.documentElement.dataset.theme=theme; localStorage.setItem("ng-theme",theme); },[theme]);
-  useEffect(()=>onAuthStateChanged(auth, async u=>{
-    setUser(u);
-    if(!u){setProfile(null);return;}
-    const snap=await getDoc(doc(db,"users",u.uid));
-    if(snap.exists()) setProfile(snap.data() as Profile);
-    else {
-      const p:Profile={uid:u.uid,email:u.email||"",displayName:u.displayName||u.email?.split("@")[0]||"Nutzer",role:"pending",approved:false};
-      await setDoc(doc(db,"users",u.uid),p); setProfile(p);
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaGO DatNet</title>
+  <style>
+    /* 10 MODERNE APPLE / FLUGMODUS THEMES */
+    :root, [data-theme="midnight"] {
+      --bg-color: #0b0f19;
+      --card-bg: #141b2d;
+      --accent-color: #0ea5e9;
+      --accent-hover: #0284c7;
+      --text-color: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #1e293b;
+      --chat-me: #059669;
+      --chat-other: #1e293b;
     }
-  }),[]);
-  useEffect(()=>{
-    if(!user || !profile?.approved) return;
-    const unsub=[
-      onSnapshot(query(collection(db,"shifts"),orderBy("startDate","desc")),s=>setShifts(s.docs.map(d=>({id:d.id,...d.data()} as Shift)))),
-      onSnapshot(query(collection(db,"trips"),orderBy("date","desc")),s=>setTrips(s.docs.map(d=>({id:d.id,...d.data()} as Trip)))),
-      onSnapshot(query(collection(db,"counts"),orderBy("date","desc")),s=>setCounts(s.docs.map(d=>({id:d.id,...d.data()} as Count)))),
-      onSnapshot(collection(db,"users"),s=>setPeople(s.docs.map(d=>d.data() as Profile))),
-      onSnapshot(query(collection(db,"messages"),orderBy("createdAt","asc")),s=>setMessages(s.docs.map(d=>({id:d.id,...d.data()}))))
-    ];
-    return ()=>unsub.forEach(fn=>fn());
-  },[user,profile?.approved]);
-  const isAdmin=profile?.role==="admin"||profile?.role==="owner";
-  const isOwner=profile?.role==="owner";
-  const say=(s:string)=>{setNotice(s);window.setTimeout(()=>setNotice(""),5000);};
 
-  async function authAction(mode:"login"|"register",form:FormData){
-    setBusy(true);try{
-      const email=String(form.get("email")||"").trim(),password=String(form.get("password")||"");
-      if(mode==="login") await signInWithEmailAndPassword(auth,email,password);
-      else {
-        const name=String(form.get("name")||"").trim();
-        const cred=await createUserWithEmailAndPassword(auth,email,password);
-        await updateProfile(cred.user,{displayName:name});
-        await setDoc(doc(db,"users",cred.user.uid),{uid:cred.user.uid,email,displayName:name,role:"pending",approved:false,createdAt:serverTimestamp()});
-        say("Registrierung erfolgreich. Dein Konto wartet auf die Freigabe durch den Owner.");
+    [data-theme="obsidian"] {
+      --bg-color: #000000;
+      --card-bg: #121212;
+      --accent-color: #38bdf8;
+      --accent-hover: #0284c7;
+      --text-color: #ffffff;
+      --text-muted: #a1a1aa;
+      --border-color: #27272a;
+      --chat-me: #047857;
+      --chat-other: #27272a;
+    }
+
+    [data-theme="nordic"] {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --text-color: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --chat-me: #0d9488;
+      --chat-other: #334155;
+    }
+
+    [data-theme="emerald"] {
+      --bg-color: #061a14;
+      --card-bg: #0d2e23;
+      --accent-color: #10b981;
+      --accent-hover: #059669;
+      --text-color: #ecfdf5;
+      --text-muted: #6ee7b7;
+      --border-color: #134e3b;
+      --chat-me: #047857;
+      --chat-other: #134e3b;
+    }
+
+    [data-theme="cyberpunk"] {
+      --bg-color: #05050a;
+      --card-bg: #0f0e1d;
+      --accent-color: #ff007f;
+      --accent-hover: #d9006b;
+      --text-color: #ffff00;
+      --text-muted: #00f0ff;
+      --border-color: #ff007f;
+      --chat-me: #ff007f;
+      --chat-other: #1f1d36;
+    }
+
+    [data-theme="titanium"] {
+      --bg-color: #18181b;
+      --card-bg: #27272a;
+      --accent-color: #e4e4e7;
+      --accent-hover: #ffffff;
+      --text-color: #fafafa;
+      --text-muted: #a1a1aa;
+      --border-color: #3f3f46;
+      --chat-me: #52525b;
+      --chat-other: #3f3f46;
+    }
+
+    [data-theme="sunset"] {
+      --bg-color: #180c10;
+      --card-bg: #29151c;
+      --accent-color: #f43f5e;
+      --accent-hover: #e11d48;
+      --text-color: #fff1f2;
+      --text-muted: #fda4af;
+      --border-color: #4c1d29;
+      --chat-me: #be123c;
+      --chat-other: #4c1d29;
+    }
+
+    [data-theme="ocean"] {
+      --bg-color: #021420;
+      --card-bg: #072233;
+      --accent-color: #00d2ff;
+      --accent-hover: #00a0c6;
+      --text-color: #e0f7fa;
+      --text-muted: #80deea;
+      --border-color: #0f3854;
+      --chat-me: #00838f;
+      --chat-other: #0f3854;
+    }
+
+    [data-theme="purple"] {
+      --bg-color: #0e0b16;
+      --card-bg: #1c152e;
+      --accent-color: #a855f7;
+      --accent-hover: #9333ea;
+      --text-color: #faf5ff;
+      --text-muted: #d8b4fe;
+      --border-color: #2e234d;
+      --chat-me: #7e22ce;
+      --chat-other: #2e234d;
+    }
+
+    [data-theme="light"] {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --accent-color: #0284c7;
+      --accent-hover: #0369a1;
+      --text-color: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --chat-me: #10b981;
+      --chat-other: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    main {
+      flex: 1;
+      padding: 1.25rem 1rem;
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+      padding-bottom: 6rem;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* HEADER */
+    .app-top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      font-size: 0.9rem;
+    }
+
+    .app-brand span {
+      background: rgba(255,255,255,0.08);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.35rem;
+    }
+
+    .header-link {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .header-link:hover {
+      color: var(--text-color);
+    }
+
+    /* CLOCK & GREETING */
+    .hero-time-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .greeting-text {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 0.1rem;
+    }
+
+    .hero-clock {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-date {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h2 {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    /* WETTER */
+    .weather-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .weather-info .temp {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .weather-info .desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .weather-icon {
+      font-size: 2.5rem;
+    }
+
+    .weather-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .weather-actions input {
+      margin-bottom: 0;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .weather-actions button {
+      margin-bottom: 0;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      width: auto;
+    }
+
+    /* NEWS TICKER */
+    .news-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .news-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .news-badge {
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-color);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+      margin-top: 0.1rem;
+    }
+
+    .news-content .title {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .news-content .sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    /* FORM & INPUTS */
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    select, input, button {
+      width: 100%;
+      padding: 0.65rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      outline: none;
+    }
+
+    button {
+      background: var(--accent-color);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    /* COUNTER */
+    .counter-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .counter-btn {
+      font-size: 1.5rem;
+      font-weight: bold;
+      width: 3.5rem;
+      height: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .counter-display {
+      flex: 1;
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: bold;
+    }
+
+    /* CHAT */
+    .chat-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .chat-selector button {
+      flex: 1;
+      padding: 0.4rem;
+      font-size: 0.75rem;
+      margin-bottom: 0;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .chat-selector button.active {
+      background: var(--accent-color);
+      color: #fff;
+      border-color: var(--accent-color);
+    }
+
+    .chat-box {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      background: rgba(0,0,0,0.15);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.75rem;
+      font-size: 0.85rem;
+      position: relative;
+      word-wrap: break-word;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .chat-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .chat-bubble-content {
+      flex: 1;
+    }
+
+    .chat-msg.me {
+      align-self: flex-end;
+      background: var(--chat-me);
+      color: #ffffff;
+      border-bottom-right-radius: 0.125rem;
+    }
+
+    .chat-msg.other {
+      align-self: flex-start;
+      background: var(--chat-other);
+      border-bottom-left-radius: 0.125rem;
+    }
+
+    .chat-msg .sender {
+      font-weight: 700;
+      font-size: 0.68rem;
+      margin-bottom: 0.15rem;
+      opacity: 0.9;
+    }
+
+    .chat-msg .meta {
+      font-size: 0.6rem;
+      opacity: 0.7;
+      text-align: right;
+      margin-top: 0.2rem;
+    }
+
+    .chat-input-container {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input-container input {
+      margin-bottom: 0;
+    }
+
+    .chat-input-container button {
+      width: auto;
+      padding: 0.6rem 1rem;
+      margin-bottom: 0;
+    }
+
+    /* TEAM */
+    .user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      background: rgba(0,0,0,0.15);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .user-card img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-card .info {
+      flex: 1;
+    }
+
+    .user-card .info .name {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .user-card .info .email {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* PROFILE */
+    .profile-preview {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .profile-avatar-lg {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-color);
+    }
+
+    /* 7-BUTTON BOTTOM NAVIGATION BAR */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.4rem 0.2rem;
+      z-index: 100;
+    }
+
+    nav button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      font-weight: 500;
+      padding: 0.3rem 0.1rem;
+      margin: 0;
+      width: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+      cursor: pointer;
+    }
+
+    nav button span.nav-icon {
+      font-size: 1.1rem;
+    }
+
+    nav button.active {
+      color: var(--accent-color);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body data-theme="midnight">
+
+  <main>
+    <!-- TAB 1: HOME (DASHBOARD) -->
+    <div id="tab-home" class="tab-content active">
+      <div class="app-top-header">
+        <div class="app-brand">
+          <span>🚍</span> NOVAGO DATNET
+        </div>
+        <a class="header-link" onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schicht-Planer</a>
+      </div>
+
+      <div class="hero-time-section">
+        <div class="greeting-text" id="greetingText">Willkommen</div>
+        <div class="hero-clock" id="heroClock">00:00</div>
+        <div class="hero-date" id="heroDate">Sonntag, 1. November</div>
+      </div>
+
+      <!-- WETTER WIDGET -->
+      <div class="card">
+        <h2>Wetter vor Ort</h2>
+        <div class="weather-row">
+          <div class="weather-info">
+            <div class="temp" id="weatherTemp">8 °C</div>
+            <div class="desc" id="weatherDesc">Plauen · Leicht bewölkt · Wind 5 km/h</div>
+          </div>
+          <div class="weather-icon">⛅</div>
+        </div>
+        <div class="weather-actions">
+          <input type="text" id="locationInput" value="Plauen" placeholder="Ort eingeben">
+          <button id="btnUpdateWeather">Aktualisieren</button>
+        </div>
+      </div>
+
+      <!-- BENACHRICHTIGUNGEN & NEWSLEISTE -->
+      <div class="card">
+        <h2>Mitteilungen & News</h2>
+        <div class="news-item">
+          <span class="news-badge">SYSTEM</span>
+          <div class="news-content">
+            <div class="title">NovaGO DatNet v2.5 Online</div>
+            <div class="sub">Dashboard, 10 Themes & Fahrgastzähler aktiv.</div>
+          </div>
+        </div>
+        <div class="news-item">
+          <span class="news-badge">INFO</span>
+          <div class="news-content">
+            <div class="title">Regulärer Fahrbetrieb</div>
+            <div class="sub">Alle Schichten und Verbindungen planmäßig.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHNELLZUGRIFFE -->
+      <div class="card">
+        <h2>Schnellzugriffe</h2>
+        <div style="display: flex; gap: 0.5rem;">
+          <button onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schichten</button>
+          <button onclick="switchTab('chat', document.getElementById('btnNavChat'))" style="background: var(--border-color);">Team-Chat</button>
+          <button onclick="switchTab('statistik', document.getElementById('btnNavStatistik'))" style="background: var(--border-color);">Zähler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: TEAM -->
+    <div id="tab-team" class="tab-content">
+      <div class="card">
+        <h2>Mitarbeiter & Kontakte</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Klicke auf einen Mitarbeiter, um einen privaten Chat zu starten.</p>
+        <div class="user-list" id="userList">
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Lade Teammitglieder...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: KALENDER / SCHICHTEN -->
+    <div id="tab-kalender" class="tab-content">
+      <div class="card">
+        <h2>Schichtverwaltung & Kalender</h2>
+        <label for="shiftSelect">Aktive Schicht wählen</label>
+        <select id="shiftSelect">
+          <option>Frühschicht (06:00 - 14:00)</option>
+          <option>Spätschicht (14:00 - 22:00)</option>
+          <option>Nachtschicht (22:00 - 06:00)</option>
+          <option>Sonderschicht / SEV</option>
+        </select>
+        <button id="btnStartShift">Schicht starten</button>
+        <p id="shiftStatusInfo" style="font-size: 0.8rem; color: var(--accent-color); margin-top: 0.5rem;"></p>
+      </div>
+    </div>
+
+    <!-- TAB 4: TECHNIK -->
+    <div id="tab-technik" class="tab-content">
+      <div class="card">
+        <h2>Technik & Geräte</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Übersicht der aktiven Ausrüstung und Gerätestatus.</p>
+        <ul style="margin-left: 1.25rem; font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-color);">
+          <li>Funkgerät Einheit A - Bereit</li>
+          <li>Zählgerät SEV 02 - Aktiv</li>
+          <li>DatNet Router #4 - Verbunden</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TAB 5: STATISTIK & FAHRGASTZÄHLER -->
+    <div id="tab-statistik" class="tab-content">
+      <div class="card">
+        <h2>Fahrgastzählung (SEV) & Statistik</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Erfasse hier ein- und aussteigende Fahrgäste während deines Schichtbetriebs.</p>
+        
+        <div class="counter-controls" style="margin: 1.5rem 0;">
+          <button class="counter-btn" id="btnMinus">-</button>
+          <span class="counter-display" id="countDisplay">0</span>
+          <button class="counter-btn" id="btnPlus">+</button>
+        </div>
+        
+        <button id="btnResetCount" style="background: #dc2626;">Zähler zurücksetzen</button>
+      </div>
+    </div>
+
+    <!-- TAB 6: CHAT -->
+    <div id="tab-chat" class="tab-content">
+      <div class="card">
+        <h2 id="chatTitle">Team-Chat (Öffentlich)</h2>
+        
+        <div class="chat-selector">
+          <button id="btnChatPublic" class="active">Öffentlich</button>
+          <button id="btnChatPrivateSelect">Privat-Chat</button>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Lade Nachrichten...</p>
+        </div>
+        
+        <div class="chat-input-container">
+          <input type="text" id="chatInput" placeholder="Nachricht schreiben...">
+          <button id="btnSendChat">Senden</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: PROFIL & EINSTELLUNGEN -->
+    <div id="tab-profil" class="tab-content">
+      <div class="card">
+        <h2>Profil & Einstellungen</h2>
+        
+        <div id="loggedOutSection">
+          <label>Benutzerkonto (Firebase)</label>
+          <input type="email" id="authEmail" placeholder="E-Mail-Adresse">
+          <input type="password" id="authPassword" placeholder="Passwort">
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="btnLogin">Anmelden</button>
+            <button id="btnRegister" style="background: var(--border-color);">Registrieren</button>
+          </div>
+        </div>
+
+        <div id="loggedInSection" style="display: none;">
+          <div class="profile-preview">
+            <img id="profilePreviewImg" class="profile-avatar-lg" src="https://via.placeholder.com/60" alt="Avatar">
+            <div>
+              <p id="profileUserEmail" style="font-weight: 600; font-size: 0.875rem;"></p>
+              <p style="font-size: 0.75rem; color: var(--accent-color);">Angemeldet</p>
+            </div>
+          </div>
+
+          <label for="profileName">Anzeigename</label>
+          <input type="text" id="profileName" placeholder="Dein Name">
+
+          <label for="profileAvatarUrl">Profilbild URL</label>
+          <input type="text" id="profileAvatarUrl" placeholder="https://beispiel.de/bild.jpg">
+
+          <button id="btnSaveProfile">Profil speichern</button>
+          <button id="btnLogout" style="background: #dc2626; margin-top: 0.25rem;">Abmelden</button>
+        </div>
+
+        <p id="authStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;">
+
+        <h2>App-Design (10 Modern Styles)</h2>
+        <label for="themeSelect">Design wählen</label>
+        <select id="themeSelect">
+          <option value="midnight">1. Midnight Slate (Standard)</option>
+          <option value="obsidian">2. Apple Obsidian (Schwarz)</option>
+          <option value="nordic">3. Nordic Frost (Klassik Blau)</option>
+          <option value="emerald">4. Emerald Luxury (Grün/Gold)</option>
+          <option value="cyberpunk">5. Cyberpunk Noir (Neon)</option>
+          <option value="titanium">6. Titanium Clean (Metallic)</option>
+          <option value="sunset">7. Sunset Warmth (Rot/Warm)</option>
+          <option value="ocean">8. Deep Ocean (Türkis)</option>
+          <option value="purple">9. Royal Purple (Violett)</option>
+          <option value="light">10. Pure Light Minimal (Hell)</option>
+        </select>
+      </div>
+    </div>
+  </main>
+
+  <!-- 7-BUTTON BOTTOM NAVIGATION BAR -->
+  <nav>
+    <button class="nav-btn active" id="btnNavHome"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" id="btnNavTeam"><span class="nav-icon">👥</span>Team</button>
+    <button class="nav-btn" id="btnNavKalender"><span class="nav-icon">📅</span>Kalender</button>
+    <button class="nav-btn" id="btnNavTechnik"><span class="nav-icon">📷</span>Technik</button>
+    <button class="nav-btn" id="btnNavStatistik"><span class="nav-icon">📊</span>Statistik</button>
+    <button class="nav-btn" id="btnNavChat"><span class="nav-icon">💬</span>Chat</button>
+    <button class="nav-btn" id="btnNavProfil"><span class="nav-icon">👤</span>Profil</button>
+  </nav>
+
+  <!-- NAVIGATION & LIVE CLOCK SCRIPT -->
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      var target = document.getElementById('tab-' + tabId);
+      if (target) {
+        target.classList.add('active');
       }
-    }catch(e:any){say(e.message||"Anmeldung fehlgeschlagen.");}finally{setBusy(false);}
-  }
-  async function createShift(form:FormData){
-    if(!user)return;
-    const start=String(form.get("startDate")),end=String(form.get("endDate"));
-    if(end<start){say("Das Enddatum darf nicht vor dem Startdatum liegen.");return;}
-    const dates:string[]=[];for(let d=new Date(start+"T12:00:00");d<=new Date(end+"T12:00:00");d.setDate(d.getDate()+1))dates.push(d.toLocaleDateString("en-CA"));
-    await addDoc(collection(db,"shifts"),{title:form.get("title"),startDate:start,endDate:end,startTime:form.get("startTime"),endTime:form.get("endTime"),assignedUids:[],dailyAvailability:Object.fromEntries(dates.map(d=>[d,""])),sevMode:form.get("sevMode"),status:"planned",notes:form.get("notes"),createdBy:user.uid,createdAt:serverTimestamp(),changeLog:[]});
-    say("Schicht wurde angelegt.");
-  }
-  async function createTrip(form:FormData){
-    if(!user)return;
-    const transport=String(form.get("transport"));
-    await addDoc(collection(db,"trips"),{title:form.get("title"),transport,date:form.get("date"),stops:String(form.get("stops")).split("\n").map(x=>x.trim()).filter(Boolean),status:"planned",sevActive:transport==="SEV",sevStatus:transport==="SEV"?"Fahrt fährt/fuhr als SEV":"",repeatTrip:form.get("repeatTrip")==="on",counters:{},createdBy:user.uid,createdAt:serverTimestamp()});
-    say("Fahrt angelegt.");
-  }
-  async function assignPerson(shift:Shift,uid:string){
-    if(!uid)return;
-    if(shift.assignedUids.includes(uid)){say("Diese Person ist bereits dieser Schicht zugewiesen.");return;}
-    await updateDoc(doc(db,"shifts",shift.id),{assignedUids:[...shift.assignedUids,uid],changeLog:[...(shift as any).changeLog||[],{at:new Date().toISOString(),by:user?.uid,field:"assignedUids"}]});
-  }
-  async function startCount(trip:Trip){
-    if(!user||!profile)return;
-    try{
-      const existing=counts.find(c=>c.tripId===trip.id&&c.status==="active");
-      const id=existing?.id || (await addDoc(collection(db,"counts"),{tripId:trip.id,tripTitle:trip.title,date:trip.date,stopCounts:Object.fromEntries(trip.stops.map(s=>[s,0])),people:[],status:"active",createdBy:user.uid,updatedAt:serverTimestamp()})).id;
-      const cRef=doc(db,"counts",id);
-      await runTransaction(db,async tx=>{
-        const snap=await tx.get(cRef);if(!snap.exists())throw new Error("Zählung nicht gefunden.");
-        const data=snap.data();if(data.lockOwner&&data.lockOwner!==user.uid)throw new Error(`Die Zählung wird gerade von ${data.lockName||"einer anderen Person"} bearbeitet.`);
-        tx.update(cRef,{lockOwner:user.uid,lockName:profile.displayName,people:Array.from(new Set([...(data.people||[]),user.uid])),updatedAt:serverTimestamp()});
+      if (btn) {
+        btn.classList.add('active');
+      }
+    }
+
+    document.getElementById('btnNavHome').onclick = function() { switchTab('home', this); };
+    document.getElementById('btnNavTeam').onclick = function() { switchTab('team', this); };
+    document.getElementById('btnNavKalender').onclick = function() { switchTab('kalender', this); };
+    document.getElementById('btnNavTechnik').onclick = function() { switchTab('technik', this); };
+    document.getElementById('btnNavStatistik').onclick = function() { switchTab('statistik', this); };
+    document.getElementById('btnNavChat').onclick = function() { switchTab('chat', this); };
+    document.getElementById('btnNavProfil').onclick = function() { switchTab('profil', this); };
+
+    // Live Uhrzeit & Dynamische Begrüßung
+    function updateClockAndGreeting() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('heroClock').textContent = `${hours}:${minutes}`;
+
+      let greet = "Willkommen";
+      if (hours >= 5 && hours < 12) greet = "Guten Morgen";
+      else if (hours >= 12 && hours < 18) greet = "Guten Tag";
+      else if (hours >= 18 && hours < 22) greet = "Guten Abend";
+      else greet = "Gute Nacht";
+
+      const namePart = window.currentUserName ? `, ${window.currentUserName}` : "";
+      document.getElementById('greetingText').textContent = `${greet}${namePart}`;
+
+      const options = { weekday: 'long', day: 'numeric', month: 'long' };
+      document.getElementById('heroDate').textContent = now.toLocaleDateString('de-DE', options);
+    }
+    setInterval(updateClockAndGreeting, 1000);
+    updateClockAndGreeting();
+
+    // Wetter Suche / Update
+    document.getElementById('btnUpdateWeather').onclick = function() {
+      const loc = document.getElementById('locationInput').value;
+      if (loc) {
+        document.getElementById('weatherDesc').textContent = `${loc} · Bedingungen geladen`;
+      }
+    };
+  </script>
+
+  <!-- FIREBASE MODULE & APP LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAvL5KTwN7h-fkc-tlHD7hKQRDzjRkS1Oo",
+      authDomain: "novago-datnet.firebaseapp.com",
+      projectId: "novago-datnet",
+      storageBucket: "novago-datnet.firebasestorage.app",
+      messagingSenderId: "1083028285400",
+      appId: "1:1083028285400:web:549b2727dbbae306b174ad",
+      measurementId: "G-GHCKHM3KC5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let activeChatTarget = "public";
+    let activeChatTargetName = "Team-Chat (Öffentlich)";
+    let lastMessageCount = 0;
+
+    const authStatus = document.getElementById("authStatus");
+    const chatBox = document.getElementById("chatBox");
+    const chatInput = document.getElementById("chatInput");
+    const btnSendChat = document.getElementById("btnSendChat");
+    const chatTitle = document.getElementById("chatTitle");
+    const btnChatPublic = document.getElementById("btnChatPublic");
+    const btnChatPrivateSelect = document.getElementById("btnChatPrivateSelect");
+    const userList = document.getElementById("userList");
+
+    const countDisplay = document.getElementById("countDisplay");
+    let currentCount = 0;
+
+    // Notification Sound (Web Audio API)
+    function playNotificationSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } catch (e) {
+        console.log("Audio precluded");
+      }
+    }
+
+    // ZÄHLER LOGIK (STATISTIK TAB)
+    document.getElementById("btnPlus").addEventListener("click", () => {
+      currentCount++;
+      countDisplay.textContent = currentCount;
+    });
+
+    document.getElementById("btnMinus").addEventListener("click", () => {
+      if (currentCount > 0) currentCount--;
+      countDisplay.textContent = currentCount;
+    });
+
+    document.getElementById("btnResetCount").addEventListener("click", () => {
+      currentCount = 0;
+      countDisplay.textContent = "0";
+    });
+
+    // SCHICHT
+    document.getElementById("btnStartShift").addEventListener("click", () => {
+      const shiftVal = document.getElementById("shiftSelect").value;
+      document.getElementById("shiftStatusInfo").textContent = "Aktiv: " + shiftVal;
+      alert("Schicht gestartet: " + shiftVal);
+    });
+
+    // THEME
+    document.getElementById("themeSelect").addEventListener("change", (e) => {
+      document.body.setAttribute("data-theme", e.target.value);
+    });
+
+    // AUTH
+    document.getElementById("btnLogin").addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const pass = document.getElementById("authPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        authStatus.textContent = "Erfolgreich angemeldet!";
+      } catch (err) {
+        authStatus.textContent = "Fehler: " + err.message;
+      }
+    });
+
+    document.getElementById("btnRegister").addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const pass = document.getElementById("authPassword").value;
+      try {
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await setDoc(doc(db, "users", res.user.uid), {
+          uid: res.user.uid,
+          email: email,
+          displayName: email.split('@')[0],
+          photoURL: ""
+        });
+        authStatus.textContent = "Konto erstellt!";
+      } catch (err) {
+        authStatus.textContent = "Fehler: " + err.message;
+      }
+    });
+
+    document.getElementById("btnLogout").addEventListener("click", async () => {
+      await signOut(auth);
+      authStatus.textContent = "Abgemeldet.";
+    });
+
+    document.getElementById("btnSaveProfile").addEventListener("click", async () => {
+      if (!auth.currentUser) return;
+      try {
+        const newName = document.getElementById("profileName").value.trim();
+        const newPhoto = document.getElementById("profileAvatarUrl").value.trim();
+        await updateProfile(auth.currentUser, {
+          displayName: newName || null,
+          photoURL: newPhoto || null
+        });
+        await setDoc(doc(db, "users", auth.currentUser.uid), {
+          uid: auth.currentUser.uid,
+          email: auth.currentUser.email,
+          displayName: newName || auth.currentUser.email.split('@')[0],
+          photoURL: newPhoto || ""
+        }, { merge: true });
+
+        authStatus.textContent = "Profil gespeichert!";
+        document.getElementById("profilePreviewImg").src = newPhoto || "https://via.placeholder.com/60";
+        window.currentUserName = newName || auth.currentUser.email.split('@')[0];
+      } catch (err) {
+        authStatus.textContent = "Fehler: " + err.message;
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      if (user) {
+        authStatus.textContent = `Angemeldet als: ${user.email}`;
+        document.getElementById("loggedOutSection").style.display = "none";
+        document.getElementById("loggedInSection").style.display = "block";
+        document.getElementById("profileUserEmail").textContent = user.email;
+        document.getElementById("profileName").value = user.displayName || "";
+        document.getElementById("profileAvatarUrl").value = user.photoURL || "";
+        if (user.photoURL) document.getElementById("profilePreviewImg").src = user.photoURL;
+
+        window.currentUserName = user.displayName || user.email.split('@')[0];
+
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || user.email.split('@')[0],
+          photoURL: user.photoURL || ""
+        }, { merge: true });
+      } else {
+        authStatus.textContent = "Nicht angemeldet";
+        document.getElementById("loggedOutSection").style.display = "block";
+        document.getElementById("loggedInSection").style.display = "none";
+        window.currentUserName = "";
+      }
+    });
+
+    // TEAM LIST
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      userList.innerHTML = "";
+      snapshot.forEach((docSnap) => {
+        const uData = docSnap.data();
+        if (currentUser && uData.uid === currentUser.uid) return;
+
+        const userCard = document.createElement("div");
+        userCard.className = "user-card";
+        const avatar = uData.photoURL || "https://via.placeholder.com/40";
+        const name = uData.displayName || uData.email.split('@')[0];
+
+        userCard.innerHTML = `
+          <img src="${avatar}" alt="Avatar">
+          <div class="info">
+            <div class="name">${name}</div>
+            <div class="email">${uData.email}</div>
+          </div>
+          <button style="width: auto; padding: 0.4rem 0.8rem; margin: 0; font-size: 0.75rem;">Chatten</button>
+        `;
+
+        userCard.onclick = () => {
+          activeChatTarget = uData.uid;
+          activeChatTargetName = "Privat: " + name;
+          chatTitle.textContent = activeChatTargetName;
+          btnChatPublic.classList.remove("active");
+          btnChatPrivateSelect.classList.add("active");
+          btnChatPrivateSelect.textContent = name;
+          switchTab('chat', document.getElementById('btnNavChat'));
+          loadChatMessages();
+        };
+
+        userList.appendChild(userCard);
       });
-      const fresh=await getDoc(cRef);const data=fresh.data() as Count;setCountValues(data.stopCounts||{});setCountOpen({id,...data});setSelectedTrip(trip);
-    }catch(e:any){say(e.message||"Zählung konnte nicht geöffnet werden.");}
-  }
-  async function saveCount(finish=false){
-    if(!countOpen||!user)return;
-    const updates:any={stopCounts:countValues,updatedAt:serverTimestamp()};
-    if(finish){updates.status="completed";updates.lockOwner=null;updates.lockName=null;updates.completedAt=serverTimestamp();}
-    await updateDoc(doc(db,"counts",countOpen.id),updates);
-    if(finish){setCountOpen(null);say("Zählung abgeschlossen und gespeichert.");}else say("Zwischenstand gespeichert.");
-  }
-  async function activateSev(trip:Trip){
-    await updateDoc(doc(db,"trips",trip.id),{transport:"SEV",sevActive:true,sevStatus:"Fahrt wurde als SEV fortgesetzt",updatedAt:serverTimestamp()});
-    say("SEV-Modus wurde aktiviert.");
-  }
-  async function saveStops(trip:Trip,stops:string[]){
-    const changed=stops.map((s,i)=>s!==trip.stops[i]);
-    await updateDoc(doc(db,"trips",trip.id),{stops,manualStopChanges:changed,updatedAt:serverTimestamp()});
-  }
-  async function sendMessage(form:FormData){
-    if(!user||!profile)return;
-    const text=String(form.get("message")||"").trim();if(!text)return;
-    await addDoc(collection(db,"messages"),{text,senderUid:user.uid,senderName:profile.displayName,target:chatTarget,createdAt:serverTimestamp()});
-  }
-  async function saveProfile(form:FormData){
-    if(!user)return;
-    const name=String(form.get("displayName")||"").trim();
-    const file=form.get("avatar") as File;
-    let photoURL=profile?.photoURL||"";
-    if(file?.size){const r=ref(storage,`avatars/${user.uid}/${file.name}`);await uploadBytes(r,file);photoURL=await getDownloadURL(r);}
-    await updateProfile(user,{displayName:name,photoURL});
-    await updateDoc(doc(db,"users",user.uid),{displayName:name,photoURL});
-    setProfile(p=>p?{...p,displayName:name,photoURL}:p);say("Profil gespeichert.");
-  }
-  async function adminCall(name:string,data:any){
-    try{const fn=httpsCallable(functions,name);await fn(data);say("Änderung erfolgreich.");}
-    catch(e:any){say(e.message||"Aktion fehlgeschlagen.");}
-  }
+    });
 
-  if(!user) return <AuthScreen onSubmit={authAction} busy={busy} notice={notice}/>;
-  if(!profile) return <div className="loading">NovaGO DatNet wird geladen …</div>;
-  if(!profile.approved||profile.locked||profile.role==="pending") return <div className="gate"><div className="brandMark">N</div><h1>{profile.locked?"Konto gesperrt":"Willkommen bei NovaGO DatNet"}</h1><p>{profile.locked?"Dein Konto wurde gesperrt. Bitte wende dich an den Owner.":"Deine Registrierung ist eingegangen. Ein Owner muss dein Konto freischalten und eine Rolle vergeben."}</p><button className="btn secondary" onClick={()=>signOut(auth)}><LogOut size={16}/> Abmelden</button></div>;
+    // CHAT ENGINE
+    btnChatPublic.onclick = () => {
+      activeChatTarget = "public";
+      activeChatTargetName = "Team-Chat (Öffentlich)";
+      chatTitle.textContent = activeChatTargetName;
+      btnChatPublic.classList.add("active");
+      btnChatPrivateSelect.classList.remove("active");
+      loadChatMessages();
+    };
 
-  const activeCounts=counts.filter(c=>c.status==="active");
-  const completedCounts=counts.filter(c=>c.status==="completed");
-  const statAllowed=new Date()>=new Date("2027-01-01T00:00:00");
-  const visibleMessages=messages.filter(m=>m.target==="team"||m.target===user.uid||m.target===chatTarget);
+    let chatUnsubscribe = null;
 
-  return <div className="app-shell">
-    <aside className="sidebar">
-      <div className="brand"><div className="brandMark">N</div><div><b>NOVAGO</b><small>DATNET</small></div></div>
-      <div className="side-label">MENÜ</div>
-      {nav.map(([id,label,Icon])=><button key={id} className={`nav-item ${page===id?"selected":""}`} onClick={()=>setPage(id)}><Icon size={18}/><span>{label}</span>{id==="counts"&&activeCounts.length>0&&<em>{activeCounts.length}</em>}</button>)}
-      {isOwner&&<div className="ownerTag"><ShieldCheck size={15}/> OWNER-ZUGANG</div>}
-      <div className="side-bottom"><div className="avatar">{profile.displayName.slice(0,1).toUpperCase()}</div><div className="user-meta"><b>{profile.displayName}</b><small>{profile.role.toUpperCase()}</small></div><button className="icon-btn" onClick={()=>signOut(auth)} title="Abmelden"><LogOut size={17}/></button></div>
-    </aside>
-    <main className="main">
-      <header className="topbar"><div><div className="eyebrow">NOVAGO DATNET / BETRIEBSZENTRALE</div><h1>{nav.find(n=>n[0]===page)?.[1]||"Übersicht"}</h1></div><div className="top-actions"><span className="online-dot">● Online</span><button className="icon-btn" onClick={()=>setTheme(t=>t==="brown"?"dark":"brown")} title="Theme wechseln">{theme==="brown"?<Moon/>:<Sun/>}</button><div className="top-avatar">{profile.displayName.slice(0,1).toUpperCase()}</div></div></header>
-      {notice&&<div className="notice">{notice}</div>}
-      {page==="home"&&<section className="view">
-        <div className="welcome"><div><span className="eyebrow light">DEIN BETRIEB AUF EINEN BLICK</span><h2>Guten Tag, {profile.displayName.split(" ")[0]}.</h2><p>Hier ist deine aktuelle Betriebsübersicht.</p></div><div className="welcome-icon"><Activity size={48}/></div></div>
-        <div className="stat-grid"><Metric label="Geplante Schichten" value={shifts.filter(s=>s.status!=="cancelled").length} icon={<CalendarDays/>}/><Metric label="Fahrten" value={trips.length} icon={<TrainFront/>}/><Metric label="Aktuelle Zählungen" value={activeCounts.length} icon={<ClipboardList/>}/><Metric label="Teammitglieder" value={people.filter(p=>p.approved).length} icon={<Users/>}/></div>
-        <div className="content-grid"><div className="panel"><PanelTitle title="Nächste Schichten" action={()=>setPage("shifts")}/>{shifts.slice(0,5).map(s=><div className="list-row" key={s.id}><div className="date-chip">{new Date(s.startDate+"T12:00:00").getDate()}<small>{new Date(s.startDate+"T12:00:00").toLocaleDateString("de-DE",{month:"short"})}</small></div><div className="row-main"><b>{s.title}</b><small>{s.startTime} – {s.endTime} · {s.assignedUids.length} Personen</small></div><ChevronRight size={17}/></div>)}{!shifts.length&&<Empty text="Noch keine Schichten angelegt."/>}</div><div className="panel"><PanelTitle title="Aktuelle Zählungen" action={()=>setPage("counts")}/>{activeCounts.slice(0,5).map(c=><div className="list-row" key={c.id}><div className="mini-icon"><ClipboardList/></div><div className="row-main"><b>{c.tripTitle}</b><small>{c.lockName?`In Bearbeitung: ${c.lockName}`:"Noch nicht geöffnet"}</small></div><span className="pill amber">Aktiv</span></div>)}{!activeCounts.length&&<Empty text="Keine laufenden Zählungen."/>}</div></div>
-      </section>}
-      {page==="shifts"&&<section className="view"><div className="section-head"><div><h2>Schichtplanung</h2><p>Plane einzelne oder mehrtägige Einsätze.</p></div></div><div className="panel"><PanelTitle title="Neue Schicht"/><form action={createShift} className="form-grid"><Field label="Schichtname"><input name="title" required placeholder="z. B. Frühschicht / SEV-Einsatz"/></Field><Field label="Von"><input name="startDate" type="date" defaultValue={today()} required/></Field><Field label="Bis"><input name="endDate" type="date" defaultValue={today()} required/></Field><Field label="Beginn"><input name="startTime" type="time" defaultValue="06:00" required/></Field><Field label="Ende"><input name="endTime" type="time" defaultValue="14:00" required/></Field><Field label="SEV-Status bei Schichterstellung"><select name="sevMode"><option value="none">Kein SEV</option><option value="continuation">Fahrt wurde als SEV fortgesetzt</option><option value="as_sev">Fahrt fährt/fuhr als SEV</option></select></Field><Field label="Notizen" wide><input name="notes" placeholder="Optionale Hinweise"/></Field><div className="form-actions"><button className="btn primary"><Plus size={16}/> Schicht erstellen</button></div></form></div><div className="panel"><PanelTitle title="Alle Schichten"/>{shifts.map(s=><div className="shift-card" key={s.id}><div className="shift-head"><div><b>{s.title}</b><small>{fmt(s.startDate)} – {fmt(s.endDate)} · {s.startTime}–{s.endTime}</small></div><span className="pill">{s.status==="planned"?"Geplant":s.status}</span></div><div className="assign-line"><span>{s.assignedUids.length} zugewiesen</span>{people.filter(p=>p.approved).length>0&&<select defaultValue="" onChange={e=>{assignPerson(s,e.target.value);e.target.value="";}}><option value="">Person zuweisen …</option>{people.filter(p=>p.approved&&!s.assignedUids.includes(p.uid)).map(p=><option value={p.uid} key={p.uid}>{p.displayName}</option>)}</select>}</div><div className="daily-grid">{Object.keys(s.dailyAvailability||{}).map(d=><label key={d}>{fmt(d)}<input type="time" defaultValue={s.dailyAvailability?.[d]||""} onBlur={e=>updateDoc(doc(db,"shifts",s.id),{[`dailyAvailability.${d}`]:e.target.value})}/></label>)}</div>{s.sevMode&&s.sevMode!=="none"&&<small className="muted">SEV-Vorgabe: {s.sevMode==="continuation"?"Fahrt wurde als SEV fortgesetzt":"Fahrt fährt/fuhr als SEV"}</small>}</div>)}{!shifts.length&&<Empty text="Noch keine Schichten vorhanden."/>}</div></section>}
-      {page==="trips"&&<section className="view"><div className="section-head"><div><h2>Fahrtenverwaltung</h2><p>Zug, SEV, Bus und Sonderfahrt zentral verwalten.</p></div></div><div className="panel"><PanelTitle title="Neue Fahrt"/><form action={createTrip} className="form-grid"><Field label="Bezeichnung"><input name="title" required placeholder="z. B. Linie / Zugnummer"/></Field><Field label="Verkehrsmittel"><select name="transport"><option>Zug</option><option>SEV</option><option>Bus</option><option>Sonderfahrt</option></select></Field><Field label="Datum"><input type="date" name="date" defaultValue={today()} required/></Field><Field label="Erneute Fahrt"><label className="check"><input type="checkbox" name="repeatTrip"/> Wiederholungsfahrt</label></Field><Field label="Haltestellen (eine je Zeile)" wide><textarea name="stops" rows={3} placeholder={"Plauen\nReichenbach\nZwickau"}/></Field><div className="form-actions"><button className="btn primary"><Plus size={16}/> Fahrt anlegen</button></div></form></div><div className="trip-grid">{trips.map(t=><article className="panel trip-card" key={t.id}><div className="trip-type">{t.transport==="Zug"?<TrainFront/>:t.transport==="Bus"||t.transport==="SEV"?<Bus/>:<CarFront/>}<span>{t.transport}</span></div><h3>{t.title}</h3><p>{fmt(t.date)} · {t.stops.length} Haltestellen</p>{t.sevStatus&&<div className="sev-banner">{t.sevStatus}</div>}<div className="trip-actions"><button className="btn secondary small" onClick={()=>{setSelectedTrip(t);setPage("counts");}}>Zählung öffnen</button>{!t.sevActive&&<button className="btn primary small" onClick={()=>activateSev(t)}>SEV aktivieren</button>}</div><details className="stops-edit"><summary>Haltestellen bearbeiten</summary>{t.stops.map((stop,i)=><input key={`${t.id}-${i}`} className={((t as any).manualStopChanges||[])[i]?"changed":""} defaultValue={stop} onBlur={e=>{const a=[...t.stops];a[i]=e.target.value;if(a[i]!==stop)saveStops(t,a);}}/>)}<small className="muted">Rot markierte Felder wurden manuell geändert.</small></details></article>)}{!trips.length&&<div className="panel"><Empty text="Noch keine Fahrten angelegt."/></div>}</div></section>}
-      {page==="counts"&&<section className="view"><div className="section-head"><div><h2>Fahrgastzählungen</h2><p>Zwischenspeichern, fortsetzen und abschließen.</p></div></div>{selectedTrip&&<div className="panel"><PanelTitle title={`Zählung starten: ${selectedTrip.title}`}/><button className="btn primary" onClick={()=>startCount(selectedTrip)}><Play size={16}/> Zählung öffnen</button></div>}<div className="panel"><PanelTitle title="Fahrten zur Zählung"/>{trips.map(t=><div className="list-row" key={t.id}><div className="mini-icon"><ClipboardList/></div><div className="row-main"><b>{t.title}</b><small>{t.transport} · {fmt(t.date)}</small></div><button className="btn secondary small" onClick={()=>startCount(t)}>Zählen / fortsetzen</button></div>)}{!trips.length&&<Empty text="Lege zuerst eine Fahrt an."/>}</div><div className="panel"><PanelTitle title="Aktuelle Zählungen"/>{counts.map(c=><div className="list-row" key={c.id}><div className="row-main"><b>{c.tripTitle}</b><small>{c.status==="completed"?"Abgeschlossen":`Aktiv${c.lockName?` · ${c.lockName}`:""}`} · {fmt(c.date)}</small></div><span className={`pill ${c.status==="completed"?"green":"amber"}`}>{c.status==="completed"?"Fertig":"Aktiv"}</span>{trips.find(t=>t.id===c.tripId)&&<button className="btn secondary small" onClick={()=>startCount(trips.find(t=>t.id===c.tripId)!)}>Öffnen</button>}</div>)}</div></section>}
-      {page==="stats"&&<section className="view"><div className="section-head"><div><h2>Statistik</h2><p>Betriebsauswertung nach Personen und Teams.</p></div></div>{!statAllowed?<div className="locked-panel"><Lock size={34}/><h3>Statistik startet am 01.01.2027</h3><p>Die Statistikansicht und die offizielle Datenerfassung bleiben bis zum 1. Januar 2027 gesperrt. Frühere Daten werden nicht nachträglich übernommen.</p></div>:<><div className="stat-grid"><Metric label="Abgeschlossene Zählungen" value={completedCounts.length} icon={<CheckCircle2/>}/><Metric label="Erfasste Personen" value={completedCounts.reduce((n,c)=>n+Object.values(c.stopCounts||{}).reduce((a,b)=>a+b,0),0)} icon={<Users/>}/><Metric label="Schichten" value={shifts.length} icon={<CalendarDays/>}/></div><div className="panel"><PanelTitle title="Auswertung filtern"/><select onChange={e=>setChatTarget(e.target.value)}><option value="all">Alle Mitarbeiter</option>{people.filter(p=>p.approved).map(p=><option key={p.uid} value={p.uid}>{p.displayName}</option>)}</select><p className="muted">Die Auswertung basiert auf endgültig abgeschlossenen Zählungen. Schicht-Ist-Zeiten müssen bei Änderungen aktualisiert werden.</p>{completedCounts.map(c=><div className="list-row" key={c.id}><div className="row-main"><b>{c.tripTitle}</b><small>{fmt(c.date)}</small></div><b>{Object.values(c.stopCounts||{}).reduce((a,b)=>a+b,0)} Personen</b></div>)}</div></>}</section>}
-      {page==="team"&&<section className="view"><div className="section-head"><div><h2>Teamübersicht</h2><p>Mitglieder, Rollen und Einsatzübersicht.</p></div></div><div className="panel">{people.filter(p=>p.approved).map(p=><div className="team-row" key={p.uid}><div className="avatar">{p.displayName.slice(0,1).toUpperCase()}</div><div className="row-main"><b>{p.displayName}</b><small>{p.email} · {p.role}</small><small>{shifts.filter(s=>s.assignedUids.includes(p.uid)).length} Schichten zugewiesen</small></div><button className="btn secondary small" onClick={()=>{setChatTarget(p.uid);setPage("chat");}}>Nachricht</button></div>)}</div>{isAdmin&&<div className="panel"><PanelTitle title="Registrierungen / Benutzerverwaltung"/>{people.filter(p=>!p.approved||p.locked).map(p=><div className="list-row" key={p.uid}><div className="row-main"><b>{p.displayName}</b><small>{p.email} · {p.role}</small></div><select defaultValue={p.role} id={`role-${p.uid}`}><option value="user">User</option><option value="admin">Admin</option><option value="owner">Owner</option></select><button className="btn primary small" onClick={()=>adminCall("approveUser",{uid:p.uid,role:(document.getElementById(`role-${p.uid}`) as HTMLSelectElement).value})}>Freigeben</button><button className="btn secondary small" onClick={()=>adminCall("setUserLocked",{uid:p.uid,locked:!p.locked})}>{p.locked?"Entsperren":"Sperren"}</button></div>)}</div>}</section>}
-      {page==="chat"&&<section className="view"><div className="section-head"><div><h2>Kommunikation</h2><p>Team-Chat und private Unterhaltungen.</p></div></div><div className="panel"><div className="chat-tabs"><button className={chatTarget==="team"?"active":""} onClick={()=>setChatTarget("team")}>Teamchat</button>{people.filter(p=>p.approved&&p.uid!==user.uid).map(p=><button className={chatTarget===p.uid?"active":""} key={p.uid} onClick={()=>setChatTarget(p.uid)}>{p.displayName}</button>)}</div><div className="messages">{messages.filter(m=>chatTarget==="team"?m.target==="team":(m.target===chatTarget&&m.senderUid===user.uid)||(m.senderUid===chatTarget&&m.target===user.uid)).map(m=><div className={`message ${m.senderUid===user.uid?"mine":""}`} key={m.id}><b>{m.senderName}</b><p>{m.text}</p></div>)}</div><form action={sendMessage} className="send-row"><input name="message" placeholder="Nachricht schreiben …" required/><button className="btn primary"><Send size={16}/></button></form></div></section>}
-      {page==="settings"&&<section className="view"><div className="section-head"><div><h2>Einstellungen & Profil</h2><p>Profil, Design und Systemverwaltung.</p></div></div><div className="panel"><PanelTitle title="Mein Profil"/><form action={saveProfile} className="form-grid"><Field label="Anzeigename"><input name="displayName" defaultValue={profile.displayName} required/></Field><Field label="Profilbild"><input type="file" name="avatar" accept="image/*"/></Field><div className="form-actions"><button className="btn primary">Profil speichern</button></div></form><hr/><PanelTitle title="Design"/><label className="muted">Farbschema</label><select value={theme} onChange={e=>setTheme(e.target.value)}><option value="brown">Modern Braun / Weiß</option><option value="dark">Dark Espresso</option></select></div>{isOwner&&<div className="panel"><PanelTitle title="Owner-Verwaltung"/><p className="muted">Systemweite Benutzer- und Rollenverwaltung findest du zusätzlich im Team-Bereich. Die erste Owner-Rolle muss einmalig sicher über Firebase/Cloud Functions eingerichtet werden.</p><button className="btn secondary" onClick={()=>setPage("team")}>Benutzer verwalten</button></div>}</section>}
-    </main>
-    {countOpen&&<div className="modal-backdrop"><div className="count-modal"><div className="modal-head"><div><span className="eyebrow">LIVE-FAHRGASTZÄHLUNG</span><h2>{countOpen.tripTitle}</h2></div><button className="icon-btn" onClick={()=>saveCount(false)}>×</button></div><p className="muted">Bearbeiter: {profile.displayName} · Zwischenspeichern jederzeit möglich</p><div className="stop-counter">{selectedTrip?.stops.map((stop,i)=><div className="stop-row" key={`${stop}-${i}`}><div><b>{stop}</b><small>Personen erfasst</small></div><div className="stepper"><button onClick={()=>setCountValues(v=>({...v,[stop]:Math.max(0,(v[stop]||0)-1)}))}>−</button><strong>{countValues[stop]||0}</strong><button onClick={()=>setCountValues(v=>({...v,[stop]:(v[stop]||0)+1}))}>+</button></div></div>)}</div><div className="modal-actions"><button className="btn secondary" onClick={()=>saveCount(false)}>Zwischenspeichern</button><button className="btn primary" onClick={()=>saveCount(true)}>Zählung abschließen</button></div></div></div>}
-  </div>;
-}
+    function loadChatMessages() {
+      if (chatUnsubscribe) chatUnsubscribe();
 
-function AuthScreen({onSubmit,busy,notice}:{onSubmit:(m:"login"|"register",f:FormData)=>void,busy:boolean,notice:string}){
-  const [mode,setMode]=useState<"login"|"register">("login");
-  return <div className="auth-screen"><div className="auth-art"><div className="brand"><div className="brandMark">N</div><div><b>NOVAGO</b><small>DATNET</small></div></div><div className="auth-hero"><span className="eyebrow light">OPERATIONS · TEAM · MOBILITY</span><h1>Alles im Blick.<br/>Gemeinsam unterwegs.</h1><p>Die zentrale Plattform für Schichten, Fahrten und Fahrgastzählungen.</p></div><div className="auth-footer">NOVAGO DATNET · BROWN EDITION</div></div><div className="auth-form-wrap"><form className="auth-form" action={f=>onSubmit(mode,f)}><span className="eyebrow">WILLKOMMEN</span><h2>{mode==="login"?"Anmelden":"Konto erstellen"}</h2><p className="muted">{mode==="login"?"Melde dich mit deinem Teamkonto an.":"Dein Konto wird nach der Registrierung manuell freigegeben."}</p>{mode==="register"&&<Field label="Name"><input name="name" required placeholder="Vor- und Nachname"/></Field>}<Field label="E-Mail"><input name="email" type="email" required placeholder="name@beispiel.de"/></Field><Field label="Passwort"><input name="password" type="password" minLength={6} required placeholder="Mindestens 6 Zeichen"/></Field><button className="btn primary full" disabled={busy}>{busy?"Bitte warten …":mode==="login"?"Anmelden":"Registrieren"}</button><button type="button" className="text-btn" onClick={()=>setMode(mode==="login"?"register":"login")}>{mode==="login"?"Noch kein Konto? Registrieren":"Bereits registriert? Anmelden"}</button>{notice&&<p className="notice">{notice}</p>}</form></div></div>;
-}
-function Field({label,children,wide=false}:{label:string,children:React.ReactNode,wide?:boolean}){return <label className={`field ${wide?"wide":""}`}><span>{label}</span>{children}</label>}
-function PanelTitle({title,action}:{title:string,action?:()=>void}){return <div className="panel-title"><h3>{title}</h3>{action&&<button className="text-btn" onClick={action}>Alle anzeigen <ChevronRight size={14}/></button>}</div>}
-function Metric({label,value,icon}:{label:string,value:number,icon:React.ReactNode}){return <div className="metric"><div className="metric-top"><span>{label}</span><i>{icon}</i></div><strong>{value}</strong></div>}
-function Empty({text}:{text:string}){return <div className="empty">{text}</div>}
-'''
+      const chatQuery = query(collection(db, "chat_messages"), orderBy("createdAt", "asc"));
 
-files["src/styles.css"] = r'''@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
-:root{font-family:'DM Sans',sans-serif;color:#30251f;background:#f7f4ef;font-synthesis:none;text-rendering:optimizeLegibility;--bg:#f7f4ef;--surface:#fffefa;--surface2:#f1ebe3;--text:#30251f;--muted:#8b7c70;--line:#e8dfd5;--brown:#493629;--brown2:#6d5140;--tan:#c6a98b;--green:#47775e;--amber:#a97831;--shadow:0 8px 28px #4833220c}
-:root[data-theme="dark"]{--bg:#211a16;--surface:#30251f;--surface2:#3b2d25;--text:#f5eee6;--muted:#b9a99b;--line:#4a392f;--brown:#c6a98b;--brown2:#ddc6ad;--tan:#a8896b;--shadow:0 8px 28px #0003}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.app-shell{min-height:100vh}.sidebar{width:248px;position:fixed;inset:0 auto 0 0;background:var(--surface);border-right:1px solid var(--line);padding:28px 18px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 34px;color:var(--brown)}.brand b{display:block;font:800 15px Manrope;letter-spacing:2px}.brand small{font-size:10px;letter-spacing:4px;color:var(--muted)}.brandMark{width:39px;height:39px;border-radius:13px;background:var(--brown);color:#fff;display:grid;place-items:center;font:800 22px Manrope;box-shadow:0 5px 14px #49362930}.side-label,.eyebrow{font-size:10px;letter-spacing:1.7px;font-weight:700;color:var(--muted)}.side-label{padding:0 12px 12px}.nav-item{border:0;background:transparent;color:var(--muted);padding:12px 13px;border-radius:11px;display:flex;align-items:center;gap:13px;text-align:left;margin:2px 0;font-weight:600;font-size:13px}.nav-item span{flex:1}.nav-item.selected{background:var(--surface2);color:var(--brown)}.nav-item em{font-style:normal;background:var(--brown);color:white;border-radius:20px;padding:2px 7px;font-size:10px}.ownerTag{margin:18px 8px;padding:10px;border-radius:9px;background:#e9dfd4;color:#6a4c37;font-size:10px;font-weight:800;display:flex;gap:8px;align-items:center}.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding:18px 3px 0;display:flex;align-items:center;gap:10px}.avatar,.top-avatar{width:36px;height:36px;border-radius:50%;background:#ddcbb8;color:#5c4231;display:grid;place-items:center;font-weight:800}.user-meta{flex:1;min-width:0}.user-meta b,.user-meta small{display:block;overflow:hidden;text-overflow:ellipsis}.user-meta b{font-size:12px}.user-meta small{font-size:9px;color:var(--muted);margin-top:3px}.icon-btn{width:36px;height:36px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;display:grid;place-items:center}.icon-btn svg{width:17px}.main{margin-left:248px;padding:0 42px 55px;max-width:1600px}.topbar{height:105px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}.topbar h1{font:800 24px Manrope;margin:6px 0 0}.top-actions{display:flex;align-items:center;gap:17px}.online-dot{font-size:11px;color:var(--green);font-weight:700}.top-avatar{width:38px;height:38px}.view{max-width:1200px;margin:auto}.welcome{background:linear-gradient(115deg,#493629,#755a45);border-radius:19px;padding:32px 38px;color:#fff;display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative}.welcome h2{font:800 27px Manrope;margin:10px 0 6px}.welcome p{color:#e3d7cc;margin:0;font-size:13px}.eyebrow.light{color:#d5bda6}.welcome-icon{width:95px;height:95px;border-radius:28px;background:#ffffff18;display:grid;place-items:center;color:#e6d2bd}.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:19px 0}.metric,.panel{background:var(--surface);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}.metric{padding:19px}.metric-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;gap:8px}.metric-top i{font-style:normal;color:var(--brown);background:var(--surface2);border-radius:9px;padding:8px;display:grid}.metric-top svg{width:17px;height:17px}.metric strong{display:block;font:800 27px Manrope;margin-top:12px}.content-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}.panel{padding:22px;margin-bottom:17px}.panel-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.panel-title h3{font:700 14px Manrope;margin:0}.text-btn{border:0;background:transparent;color:var(--brown2);font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:4px}.list-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:12px}.list-row:last-child{border:0}.date-chip{width:40px;height:43px;border-radius:9px;background:var(--surface2);display:grid;place-content:center;text-align:center;font:800 15px Manrope;color:var(--brown)}.date-chip small{font:600 9px 'DM Sans';text-transform:uppercase}.row-main{flex:1;min-width:0}.row-main b,.row-main small{display:block}.row-main b{font-size:12px}.row-main small{font-size:10px;color:var(--muted);margin-top:4px}.mini-icon{width:34px;height:34px;border-radius:9px;background:var(--surface2);display:grid;place-items:center;color:var(--brown)}.mini-icon svg{width:16px}.empty{padding:20px 5px;color:var(--muted);font-size:12px;text-align:center}.section-head{display:flex;justify-content:space-between;align-items:center;margin:0 0 17px}.section-head h2{font:800 20px Manrope;margin:0 0 5px}.section-head p{font-size:12px;color:var(--muted);margin:0}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:7px;font-size:11px;color:var(--muted);font-weight:600}.field.wide{grid-column:1/-1}.field input,.field select,.field textarea,.assign-line select,.panel>select,.daily-grid input,.stops-edit input{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:11px 12px;color:var(--text);outline:none;font-size:12px}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--tan)}.form-actions{grid-column:1/-1;display:flex;justify-content:flex-end}.btn{border:0;border-radius:9px;padding:11px 15px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn.primary{background:var(--brown);color:white}.btn.secondary{background:var(--surface2);color:var(--brown2)}.btn.small{padding:8px 10px;font-size:10px}.btn.full{width:100%;margin-top:9px;padding:13px}.shift-card{padding:15px 0;border-bottom:1px solid var(--line)}.shift-card:last-child{border:0}.shift-head,.assign-line{display:flex;align-items:center;justify-content:space-between;gap:10px}.shift-head b,.shift-head small{display:block}.shift-head b{font-size:13px}.shift-head small{font-size:10px;color:var(--muted);margin-top:4px}.pill{border-radius:30px;padding:5px 9px;background:var(--surface2);color:var(--brown2);font-size:9px;font-weight:700}.pill.amber{background:#f6eddd;color:#9a6c2c}.pill.green{background:#e5f0e8;color:#47775e}.assign-line{font-size:10px;color:var(--muted);margin:12px 0}.assign-line select{max-width:210px;padding:7px}.daily-grid{display:flex;gap:8px;overflow:auto;padding-bottom:8px}.daily-grid label{min-width:115px;font-size:9px;color:var(--muted)}.daily-grid input{padding:7px;margin-top:5px}.muted{font-size:11px;color:var(--muted)}.trip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.trip-card{margin:0}.trip-type{display:flex;align-items:center;gap:7px;color:var(--brown);font-size:10px;font-weight:800}.trip-type svg{width:18px}.trip-card h3{font:700 16px Manrope;margin:15px 0 5px}.trip-card>p{font-size:11px;color:var(--muted)}.sev-banner{background:#f7eee2;color:#845b35;padding:9px;border-radius:8px;font-size:10px;margin:12px 0}.trip-actions{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}.stops-edit summary{font-size:10px;color:var(--brown2);cursor:pointer;font-weight:700}.stops-edit input{margin-top:7px}.stops-edit input.changed{border:1px solid #c84d43;background:#fff1ef}.check{display:flex;align-items:center;gap:8px}.check input{width:auto}.locked-panel{padding:55px 20px;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:15px;color:var(--muted)}.locked-panel svg{color:var(--brown)}.locked-panel h3{color:var(--text);font:700 18px Manrope}.locked-panel p{font-size:12px;max-width:440px;margin:10px auto;line-height:1.7}.team-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.team-row:last-child{border:0}.team-row .row-main{flex:1}.chat-tabs{display:flex;gap:7px;overflow:auto;border-bottom:1px solid var(--line);padding-bottom:12px}.chat-tabs button{white-space:nowrap;border:1px solid var(--line);border-radius:20px;background:var(--bg);padding:7px 12px;font-size:10px;color:var(--muted)}.chat-tabs button.active{background:var(--brown);color:white}.messages{height:380px;overflow:auto;padding:15px 3px;display:flex;flex-direction:column;gap:10px}.message{max-width:75%;align-self:flex-start;background:var(--surface2);border-radius:12px 12px 12px 3px;padding:10px 13px}.message.mine{align-self:flex-end;background:var(--brown);color:white;border-radius:12px 12px 3px 12px}.message b{font-size:10px}.message p{font-size:12px;margin:5px 0 0;white-space:pre-wrap}.send-row{display:flex;gap:8px}.send-row input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);padding:11px;border-radius:9px;color:var(--text)}hr{border:0;border-top:1px solid var(--line);margin:22px 0}.notice{background:#f4e8d8;color:#704c30;border:1px solid #e4d2bd;padding:11px 14px;border-radius:10px;font-size:11px;margin-bottom:17px}.gate,.loading{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;background:var(--bg)}.gate h1{font:800 25px Manrope}.gate p{max-width:450px;color:var(--muted);font-size:13px;line-height:1.7}.auth-screen{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;background:var(--surface)}.auth-art{background:linear-gradient(145deg,#38291f,#765b45);color:white;padding:45px 8%;display:flex;flex-direction:column;justify-content:space-between;min-height:100vh}.auth-art .brand{color:white;padding:0}.auth-art .brand small{color:#ddc8b4}.auth-hero h1{font:800 clamp(36px,5vw,60px) Manrope;line-height:1.12;margin:15px 0}.auth-hero p{color:#ddcfc2;font-size:14px;max-width:390px;line-height:1.7}.auth-footer{font-size:9px;letter-spacing:2px;color:#d5bda6}.auth-form-wrap{display:grid;place-items:center;padding:35px}.auth-form{width:min(100%,370px)}.auth-form h2{font:800 30px Manrope;margin:10px 0}.auth-form>.muted{margin-bottom:27px}.auth-form .field{margin-bottom:16px}.auth-form .text-btn{margin-top:17px}.modal-backdrop{position:fixed;inset:0;background:#21181199;z-index:20;display:grid;place-items:center;padding:15px}.count-modal{width:min(100%,650px);max-height:90vh;overflow:auto;background:var(--surface);border-radius:18px;padding:24px;box-shadow:0 20px 70px #0004}.modal-head{display:flex;justify-content:space-between;align-items:center}.modal-head h2{font:800 20px Manrope;margin:5px 0 12px}.stop-counter{margin:17px 0}.stop-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}.stop-row b,.stop-row small{display:block}.stop-row b{font-size:12px}.stop-row small{font-size:9px;color:var(--muted);margin-top:4px}.stepper{display:flex;align-items:center;gap:13px}.stepper button{width:33px;height:33px;border:0;border-radius:9px;background:var(--surface2);color:var(--brown);font-size:19px}.stepper strong{min-width:25px;text-align:center}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
-@media(max-width:950px){.sidebar{width:210px}.main{margin-left:210px;padding:0 23px 40px}.stat-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:680px){.sidebar{position:fixed;inset:auto 0 0;width:auto;height:66px;padding:5px 4px;border-right:0;border-top:1px solid var(--line);flex-direction:row;justify-content:space-around}.sidebar .brand,.side-label,.ownerTag,.side-bottom{display:none}.nav-item{flex:1;flex-direction:column;justify-content:center;gap:4px;padding:5px 1px;font-size:8px;margin:0}.nav-item svg{width:17px}.nav-item em{position:absolute;margin:0 0 26px 25px;padding:1px 5px}.main{margin:0;padding:0 14px 90px}.topbar{height:78px;margin-bottom:18px}.topbar h1{font-size:20px}.topbar .eyebrow{font-size:8px}.top-actions{gap:8px}.online-dot{display:none}.welcome{padding:24px 20px}.welcome h2{font-size:22px}.welcome-icon{width:60px;height:60px}.welcome-icon svg{width:34px}.stat-grid{gap:9px}.metric{padding:14px}.metric strong{font-size:23px}.metric-top{font-size:9px}.content-grid,.trip-grid{grid-template-columns:1fr}.panel{padding:17px}.form-grid{grid-template-columns:1fr}.field.wide,.form-actions{grid-column:auto}.auth-screen{grid-template-columns:1fr}.auth-art{min-height:250px;padding:25px}.auth-hero h1{font-size:32px}.auth-hero p,.auth-footer{display:none}.auth-form-wrap{padding:35px 25px}.team-row .btn{padding:7px}.modal-actions{flex-direction:column}.modal-actions .btn{width:100%}}
-'''
+      chatUnsubscribe = onSnapshot(chatQuery, (snapshot) => {
+        chatBox.innerHTML = "";
+        let msgCount = 0;
+        snapshot.forEach((docSnap) => {
+          msgCount++;
+          const data = docSnap.data();
+          
+          if (activeChatTarget === "public") {
+            if (data.target && data.target !== "public") return;
+          } else {
+            const isPrivateMatch = (data.senderUid === currentUser?.uid && data.target === activeChatTarget) ||
+                                   (data.senderUid === activeChatTarget && data.target === currentUser?.uid);
+            if (!isPrivateMatch) return;
+          }
 
-files["firestore.rules"] = r'''rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function signedIn() { return request.auth != null; }
-    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
-    function approved() { return signedIn() && me().approved == true && me().locked != true; }
-    function admin() { return approved() && me().role in ['admin','owner']; }
-    function owner() { return approved() && me().role == 'owner'; }
+          const isMe = currentUser && currentUser.uid === data.senderUid;
+          const msgDiv = document.createElement("div");
+          msgDiv.className = `chat-msg ${isMe ? 'me' : 'other'}`;
 
-    match /users/{uid} {
-      allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.role == 'pending'
-        && request.resource.data.approved == false;
-      allow read: if signedIn() && (request.auth.uid == uid || approved());
-      allow update: if signedIn() && request.auth.uid == uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName','photoURL']);
-      allow update, delete: if admin();
+          const senderName = data.senderName || "Anonym";
+          const avatarUrl = data.senderAvatar || "https://via.placeholder.com/28";
+          const timeStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+
+          const avatarImg = document.createElement("img");
+          avatarImg.className = "chat-avatar";
+          avatarImg.src = avatarUrl;
+
+          const bubbleContent = document.createElement("div");
+          bubbleContent.className = "chat-bubble-content";
+
+          const senderDiv = document.createElement("div");
+          senderDiv.className = "sender";
+          senderDiv.textContent = senderName;
+
+          const textDiv = document.createElement("div");
+          textDiv.textContent = data.text;
+
+          const metaDiv = document.createElement("div");
+          metaDiv.className = "meta";
+          metaDiv.textContent = timeStr;
+
+          bubbleContent.appendChild(senderDiv);
+          bubbleContent.appendChild(textDiv);
+          bubbleContent.appendChild(metaDiv);
+
+          msgDiv.appendChild(avatarImg);
+          msgDiv.appendChild(bubbleContent);
+          chatBox.appendChild(msgDiv);
+        });
+
+        if (lastMessageCount > 0 && msgCount > lastMessageCount) {
+          playNotificationSound();
+        }
+        lastMessageCount = msgCount;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
     }
-    match /shifts/{id} {
-      allow read: if approved();
-      allow create: if approved() && request.resource.data.createdBy == request.auth.uid;
-      allow update: if admin() || (approved() && resource.data.createdBy == request.auth.uid);
-      allow delete: if admin();
+
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      const senderName = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : "Fahrer (Anonym)";
+      const senderUid = currentUser ? currentUser.uid : "anon";
+      const senderAvatar = currentUser ? (currentUser.photoURL || "") : "";
+
+      try {
+        await addDoc(collection(db, "chat_messages"), {
+          text: text,
+          senderName: senderName,
+          senderUid: senderUid,
+          senderAvatar: senderAvatar,
+          target: activeChatTarget,
+          createdAt: serverTimestamp()
+        });
+        chatInput.value = "";
+      } catch (err) {
+        console.error("Fehler beim Senden:", err);
+      }
     }
-    match /trips/{id} {
-      allow read: if approved();
-      allow create: if approved() && request.resource.data.createdBy == request.auth.uid;
-      allow update: if approved();
-      allow delete: if admin();
-    }
-    match /counts/{id} {
-      allow read: if approved();
-      allow create: if approved() && request.resource.data.createdBy == request.auth.uid;
-      allow update: if approved() && (
-        resource.data.lockOwner == request.auth.uid ||
-        (resource.data.lockOwner == null && request.resource.data.lockOwner == request.auth.uid) ||
-        (admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','lockOwner','lockName','updatedAt','completedAt']))
-      );
-      allow delete: if admin();
-    }
-    match /messages/{id} {
-      allow read: if approved() && (resource.data.target == 'team' ||
-        resource.data.senderUid == request.auth.uid || resource.data.target == request.auth.uid);
-      allow create: if approved() && request.resource.data.senderUid == request.auth.uid
-        && request.resource.data.target is string && request.resource.data.text is string
-        && request.resource.data.text.size() <= 4000;
-      allow update, delete: if admin();
-    }
-  }
-}
-'''
 
-files["firestore.indexes.json"] = r'''{
-  "indexes": [],
-  "fieldOverrides": []
-}
-'''
+    btnSendChat.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
 
-files["functions/package.json"] = r'''{
-  "name": "novago-datnet-functions",
-  "private": true,
-  "main": "lib/index.js",
-  "engines": { "node": "20" },
-  "scripts": { "build": "tsc", "deploy": "firebase deploy --only functions" },
-  "dependencies": {
-    "firebase-admin": "^13.4.0",
-    "firebase-functions": "^6.4.0"
-  },
-  "devDependencies": { "typescript": "^5.8.3" }
-}
-'''
-files["functions/tsconfig.json"] = r'''{
-  "compilerOptions": {
-    "module": "NodeNext", "moduleResolution": "NodeNext", "target": "ES2022",
-    "outDir": "lib", "rootDir": "src", "strict": true, "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "include": ["src"]
-}
-'''
-files["functions/src/index.ts"] = r'''import { initializeApp } from "firebase-admin/app";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-
-initializeApp();
-const db = getFirestore();
-
-async function requireAdmin(uid?: string) {
-  if (!uid) throw new HttpsError("unauthenticated", "Anmeldung erforderlich.");
-  const snap = await db.doc(`users/${uid}`).get();
-  const p = snap.data();
-  if (!p?.approved || p.locked || !["admin", "owner"].includes(p.role))
-    throw new HttpsError("permission-denied", "Keine Admin-Berechtigung.");
-  return p;
-}
-
-export const approveUser = onCall({ region: "europe-west3" }, async (request) => {
-  const actor = await requireAdmin(request.auth?.uid);
-  const { uid, role } = request.data as {uid:string; role:string};
-  if (!uid || !["user","admin","owner"].includes(role)) throw new HttpsError("invalid-argument","Ungültige Angaben.");
-  if (role === "owner" && actor.role !== "owner") throw new HttpsError("permission-denied","Nur Owner können Owner vergeben.");
-  await db.doc(`users/${uid}`).update({ approved:true, role, approvedAt:FieldValue.serverTimestamp(), approvedBy:request.auth!.uid, locked:false });
-  return { ok:true };
-});
-
-export const setUserLocked = onCall({ region: "europe-west3" }, async (request) => {
-  const actor = await requireAdmin(request.auth?.uid);
-  const { uid, locked } = request.data as {uid:string; locked:boolean};
-  if (!uid || typeof locked !== "boolean") throw new HttpsError("invalid-argument","Ungültige Angaben.");
-  const target = await db.doc(`users/${uid}`).get();
-  if (!target.exists) throw new HttpsError("not-found","Benutzer nicht gefunden.");
-  if (target.data()?.role === "owner" && actor.role !== "owner") throw new HttpsError("permission-denied","Owner-Konten sind geschützt.");
-  if (uid === request.auth!.uid && locked) throw new HttpsError("failed-precondition","Du kannst dich nicht selbst sperren.");
-  await db.doc(`users/${uid}`).update({ locked, lockedAt: locked ? FieldValue.serverTimestamp() : null, lockedBy:request.auth!.uid });
-  return { ok:true };
-});
-
-// Einmalig nach Deployment mit dem eigenen UID ausführen, um den ersten Owner zu setzen.
-// Nur ein bereits autorisierter Owner darf diese Funktion später verwenden.
-export const ownerSetRole = onCall({ region: "europe-west3" }, async (request) => {
-  await requireAdmin(request.auth?.uid);
-  const { uid, role } = request.data as {uid:string; role:string};
-  if (!uid || !["user","admin","owner"].includes(role)) throw new HttpsError("invalid-argument","Ungültige Angaben.");
-  await db.doc(`users/${uid}`).update({ role, approved:true });
-  return { ok:true };
-});
-'''
-files["firebase.json"] = r'''{
-  "firestore": { "rules": "firestore.rules", "indexes": "firestore.indexes.json" },
-  "functions": [{ "source": "functions", "codebase": "default" }]
-}
-'''
-files[".gitignore"] = r'''node_modules
-dist
-.env
-.env.local
-functions/node_modules
-functions/lib
-.firebase
-'''
-
-files["README.md"] = r'''# NovaGO DatNet – Brown Edition
-
-Firebase-basiertes Web-App-Grundprojekt für Schichten, Fahrten, SEV, Fahrgastzählungen, Team und Chats.
-
-## Enthalten
-
-- React + Vite + TypeScript
-- Bestehendes Firebase-Projekt `novago-datnet` (Konfiguration über `.env.local`)
-- Firebase Authentication, Firestore und Storage
-- Freigabestatus `pending`, Rollen `user`, `admin`, `owner`
-- Schichtplanung über mehrere Tage mit täglicher Zeitverfügung
-- Zuweisung ohne doppelte Person innerhalb derselben Schicht
-- Fahrten mit Zug, SEV, Bus und Sonderfahrt
-- SEV-Aktivierung während einer Fahrt und bearbeitbare Haltestellen
-- Zählungen mit Zwischenstand, Wiederaufnahme und Abschluss
-- Team- und Einzelchat
-- Statistik-Ansicht ab 01.01.2027
-- Modernes Braun-Weiß-Theme sowie Dark-Espresso
-- Cloud Functions für Freigabe und Kontosperre
-
-## 1. Firebase vorbereiten
-
-Im Firebase-Projekt `novago-datnet` aktivieren:
-
-1. Authentication → Sign-in method → E-Mail/Passwort.
-2. Firestore Database erstellen.
-3. Storage aktivieren.
-4. Cloud Functions bereitstellen (Blaze-Abrechnung kann erforderlich sein).
-
-## 2. Projekt lokal starten
-
-Node.js 20 oder neuer installieren. Danach im Projektordner:
-
-```bash
-npm install
-```
-
-`.env.example` in `.env.local` kopieren und die Werte aus Firebase Project settings → General → Your apps eintragen. Die bisherige Firebase-Konfiguration ist als Startwert bereits eingetragen.
-
-```bash
-npm run dev
-```
-
-## 3. Firebase-Regeln und Funktionen veröffentlichen
-
-Firebase CLI installieren und anmelden:
-
-```bash
-npm install -g firebase-tools
-firebase login
-firebase use novago-datnet
-firebase deploy --only firestore:rules,firestore:indexes
-cd functions
-npm install
-npm run build
-cd ..
-firebase deploy --only functions
-```
-
-## 4. Ersten Owner einrichten – wichtig
-
-Neue Registrierungen erhalten absichtlich `role: pending` und `approved: false`.
-Lege zuerst dein Konto über die App an. Kopiere danach deine Firebase-Auth-UID aus Firebase Console → Authentication → Users.
-
-Die erste Owner-Rolle wird einmalig über die Admin SDK / einen vertrauenswürdigen Admin-Arbeitsplatz in Firestore gesetzt:
-Dokument `users/DEINE_UID`:
-```json
-{ "approved": true, "role": "owner", "locked": false }
-```
-Nicht über die Browser-Konsole oder öffentlich erreichbare Client-Funktionen vergeben. Danach kann der Owner neue Konten über Team freischalten.
-
-## 5. GitHub
-
-1. Neues privates GitHub-Repository erstellen.
-2. Alle Projektdateien hochladen (nicht `.env.local`, `node_modules` oder Schlüssel).
-3. Für GitHub Pages ist dieses Projekt nicht direkt geeignet, weil Firebase Functions und Vite-Routing/Hosting berücksichtigt werden müssen. Empfohlen: Firebase Hosting oder Vercel.
-4. Für Firebase Hosting: `npm run build`, dann `firebase init hosting` (public directory `dist`, SPA rewrite aktivieren) und `firebase deploy --only hosting`.
-
-## Sicherheit / noch vor echtem Betrieb prüfen
-
-- Firebase Web API Key ist kein Service-Account-Schlüssel, aber Security Rules sind entscheidend.
-- Cloud Functions und Firestore Rules vor produktivem Einsatz mit Emulator Suite und Testkonten prüfen.
-- Whitelist für Länder-/E-Mail-Domains muss mit den tatsächlichen Teamregeln festgelegt und serverseitig implementiert werden. Eine Client-seitige Prüfung wäre umgehbar.
-- PIN-Reset ist hier bewusst nicht als unsicherer eigener PIN-Mechanismus eingebaut. Nutze Firebase Password Reset bzw. einen serverseitig verifizierten Support-Prozess.
-- Automatischer 48-Stunden-Logout muss über eine serverseitige Session-/Token-Strategie umgesetzt werden; ein reiner Browser-Timer ist keine Sicherheitsmaßnahme.
-- Schicht-Ist-Zeiten, Korrekturhistorie (ohne Rechtschreibkorrekturen) und Statistikaggregation brauchen vor dem produktiven Einsatz eine fachliche Abnahme.
-- Die Zählungs-Sperre ist in dieser Starterversion clientseitig per Firestore-Transaktion umgesetzt. Für hochkritischen Parallelbetrieb sollte das Öffnen/Übernehmen der Sperre zusätzlich ausschließlich über eine Callable Function laufen.
-- Private Chat-Regeln sind auf Teilnehmer beschränkt; Teamchat ist für freigegebene Konten lesbar.
-
-## Ordnerstruktur
-
-```text
-src/                 React-Oberfläche und Firebase-Client
-functions/src/       privilegierte Firebase Cloud Functions
-firestore.rules      Firestore-Zugriffsregeln
-firebase.json        Firebase Deployment-Konfiguration
-```
-'''
-
-for path, content in files.items():
-    full = os.path.join(root, path)
-    os.makedirs(os.path.dirname(full), exist_ok=True)
-    with open(full, "w", encoding="utf-8") as f:
-        f.write(content)
-
-zip_path = "/mnt/data/NovaGO-DatNet-Brown-Edition.zip"
-with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
-    for base, dirs, names in os.walk(root):
-        for name in names:
-            p = os.path.join(base, name)
-            z.write(p, os.path.relpath(p, root))
-
-print(f"Projektdateien: {len(files)}")
-print(f"ZIP erstellt: {zip_path}")
+    loadChatMessages();
+  </script>
+</body>
+</html>
