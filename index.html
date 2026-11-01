@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NovaGO DatNet</title>
   <style>
-    /* DESIGN & THEMES */
-    :root, [data-theme="dark"] {
+    /* 10 MODERNE APPLE/FLUGMODUS-STYLE THEMES */
+    :root, [data-theme="midnight"] {
       --bg-color: #0b0f19;
       --card-bg: #141b2d;
       --accent-color: #0ea5e9;
@@ -18,40 +18,76 @@
       --chat-other: #1e293b;
     }
 
-    [data-theme="light"] {
-      --bg-color: #f1f5f9;
-      --card-bg: #ffffff;
-      --accent-color: #0284c7;
-      --accent-hover: #0369a1;
-      --text-color: #0f172a;
-      --text-muted: #64748b;
-      --border-color: #cbd5e1;
-      --chat-me: #10b981;
-      --chat-other: #e2e8f0;
+    [data-theme="obsidian"] {
+      --bg-color: #000000;
+      --card-bg: #121212;
+      --accent-color: #38bdf8;
+      --accent-hover: #0284c7;
+      --text-color: #ffffff;
+      --text-muted: #a1a1aa;
+      --border-color: #27272a;
+      --chat-me: #047857;
+      --chat-other: #27272a;
     }
 
-    [data-theme="neon"] {
-      --bg-color: #050505;
-      --card-bg: #111111;
-      --accent-color: #39ff14;
-      --accent-hover: #32cd32;
-      --text-color: #ffffff;
-      --text-muted: #888888;
-      --border-color: #39ff14;
-      --chat-me: #1f521d;
-      --chat-other: #222222;
+    [data-theme="nordic"] {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --text-color: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --chat-me: #0d9488;
+      --chat-other: #334155;
+    }
+
+    [data-theme="emerald"] {
+      --bg-color: #061a14;
+      --card-bg: #0d2e23;
+      --accent-color: #10b981;
+      --accent-hover: #059669;
+      --text-color: #ecfdf5;
+      --text-muted: #6ee7b7;
+      --border-color: #134e3b;
+      --chat-me: #047857;
+      --chat-other: #134e3b;
     }
 
     [data-theme="cyberpunk"] {
-      --bg-color: #0a0833;
-      --card-bg: #15104a;
-      --accent-color: #ff0055;
-      --accent-hover: #d60045;
-      --text-color: #fcee0a;
+      --bg-color: #05050a;
+      --card-bg: #0f0e1d;
+      --accent-color: #ff007f;
+      --accent-hover: #d9006b;
+      --text-color: #ffff00;
       --text-muted: #00f0ff;
-      --border-color: #ff0055;
-      --chat-me: #ff0055;
-      --chat-other: #2b1259;
+      --border-color: #ff007f;
+      --chat-me: #ff007f;
+      --chat-other: #1f1d36;
+    }
+
+    [data-theme="titanium"] {
+      --bg-color: #18181b;
+      --card-bg: #27272a;
+      --accent-color: #e4e4e7;
+      --accent-hover: #ffffff;
+      --text-color: #fafafa;
+      --text-muted: #a1a1aa;
+      --border-color: #3f3f46;
+      --chat-me: #52525b;
+      --chat-other: #3f3f46;
+    }
+
+    [data-theme="sunset"] {
+      --bg-color: #180c10;
+      --card-bg: #29151c;
+      --accent-color: #f43f5e;
+      --accent-hover: #e11d48;
+      --text-color: #fff1f2;
+      --text-muted: #fda4af;
+      --border-color: #4c1d29;
+      --chat-me: #be123c;
+      --chat-other: #4c1d29;
     }
 
     [data-theme="ocean"] {
@@ -64,6 +100,30 @@
       --border-color: #0f3854;
       --chat-me: #00838f;
       --chat-other: #0f3854;
+    }
+
+    [data-theme="purple"] {
+      --bg-color: #0e0b16;
+      --card-bg: #1c152e;
+      --accent-color: #a855f7;
+      --accent-hover: #9333ea;
+      --text-color: #faf5ff;
+      --text-muted: #d8b4fe;
+      --border-color: #2e234d;
+      --chat-me: #7e22ce;
+      --chat-other: #2e234d;
+    }
+
+    [data-theme="light"] {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --accent-color: #0284c7;
+      --accent-hover: #0369a1;
+      --text-color: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --chat-me: #10b981;
+      --chat-other: #e2e8f0;
     }
 
     * {
@@ -99,7 +159,7 @@
       display: block;
     }
 
-    /* HEADER */
+    /* HEADER STYLE (WIE VORLAGE) */
     .app-top-header {
       display: flex;
       justify-content: space-between;
@@ -112,18 +172,29 @@
       align-items: center;
       gap: 0.5rem;
       font-weight: 700;
-      letter-spacing: 0.05em;
-      font-size: 0.95rem;
+      letter-spacing: 0.1em;
+      font-size: 0.9rem;
     }
 
     .app-brand span {
-      background: rgba(14, 165, 233, 0.15);
-      color: var(--accent-color);
+      background: rgba(255,255,255,0.08);
       padding: 0.3rem 0.5rem;
       border-radius: 0.35rem;
     }
 
-    /* CLOCK SECTION */
+    .header-link {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .header-link:hover {
+      color: var(--text-color);
+    }
+
+    /* CLOCK & GREETING SECTION */
     .hero-time-section {
       margin-bottom: 1.25rem;
     }
@@ -147,7 +218,7 @@
       margin-top: 0.2rem;
     }
 
-    /* CARDS */
+    /* CARDS (APPLE / FLUGMODUS DESIGN) */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -158,7 +229,7 @@
     }
 
     .card h2 {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-muted);
@@ -421,16 +492,16 @@
     }
   </style>
 </head>
-<body data-theme="dark">
+<body data-theme="midnight">
 
   <main>
     <!-- TAB 1: HOME -->
     <div id="tab-home" class="tab-content active">
       <div class="app-top-header">
         <div class="app-brand">
-          <span>🚌</span> NOVAGO DATNET
+          <span>🚍</span> NOVAGO DATNET
         </div>
-        <div style="font-size: 0.8rem; color: var(--accent-color); font-weight: 600;" id="statusBadgeHome">Regulärer Betrieb</div>
+        <a class="header-link" onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Team-Planer</a>
       </div>
 
       <div class="hero-time-section">
@@ -439,15 +510,15 @@
         <div class="hero-date" id="heroDate">Sonntag, 1. November</div>
       </div>
 
-      <!-- SCHICHT-SCHNELLÜBERSICHT -->
+      <!-- SCHICHT-ÜBERSICHT -->
       <div class="card">
-        <h2>Aktive Schicht</h2>
+        <h2>Aktuelle Schicht</h2>
         <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;" id="activeShiftDisplay">Keine Schicht aktiv</div>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Wechsle in den Kalender, um deine Schicht zu starten.</p>
         <button onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schicht verwalten</button>
       </div>
 
-      <!-- SCHNELLZUGRIFF STATISTIK -->
+      <!-- FAHRGAST-ZÄHLER SCHNELLANSICHT -->
       <div class="card">
         <h2>Fahrgast-Zähler</h2>
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -572,14 +643,19 @@
 
         <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;">
 
-        <h2>App-Design & Themes</h2>
+        <h2>App-Design (10 Modern Styles)</h2>
         <label for="themeSelect">Design wählen</label>
         <select id="themeSelect">
-          <option value="dark">Dark Slate (Standard)</option>
-          <option value="light">Light Clean (Hell)</option>
-          <option value="neon">Neon Glow (Grell)</option>
-          <option value="cyberpunk">Cyberpunk 2077</option>
-          <option value="ocean">Oceanic Deep (Blau)</option>
+          <option value="midnight">1. Midnight Slate (Standard)</option>
+          <option value="obsidian">2. Apple Obsidian (Schwarz)</option>
+          <option value="nordic">3. Nordic Frost (Klassik Blau)</option>
+          <option value="emerald">4. Emerald Luxury (Grün/Gold)</option>
+          <option value="cyberpunk">5. Cyberpunk Noir (Neon)</option>
+          <option value="titanium">6. Titanium Clean (Metallic)</option>
+          <option value="sunset">7. Sunset Warmth (Rot/Warm)</option>
+          <option value="ocean">8. Deep Ocean (Türkis)</option>
+          <option value="purple">9. Royal Purple (Violett)</option>
+          <option value="light">10. Pure Light Minimal (Hell)</option>
         </select>
       </div>
     </div>
