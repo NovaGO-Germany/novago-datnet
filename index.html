@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NovaGO DatNet</title>
   <style>
-    /* 10 MODERNE APPLE/FLUGMODUS-STYLE THEMES */
+    /* 10 MODERNE APPLE / FLUGMODUS THEMES */
     :root, [data-theme="midnight"] {
       --bg-color: #0b0f19;
       --card-bg: #141b2d;
@@ -194,7 +194,7 @@
       color: var(--text-color);
     }
 
-    /* CLOCK & GREETING SECTION */
+    /* CLOCK & GREETING */
     .hero-time-section {
       margin-bottom: 1.25rem;
     }
@@ -236,7 +236,7 @@
       margin-bottom: 0.75rem;
     }
 
-    /* WETTER WIDGET */
+    /* WETTER */
     .weather-row {
       display: flex;
       justify-content: space-between;
@@ -278,7 +278,7 @@
       width: auto;
     }
 
-    /* NEWS & NOTIFICATIONS */
+    /* NEWS TICKER */
     .news-item {
       display: flex;
       gap: 0.75rem;
@@ -367,7 +367,7 @@
     .counter-display {
       flex: 1;
       text-align: center;
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: bold;
     }
 
@@ -573,13 +573,13 @@
 <body data-theme="midnight">
 
   <main>
-    <!-- TAB 1: HOME (WILLKOMMEN & INFO-DASHBOARD) -->
+    <!-- TAB 1: HOME (DASHBOARD) -->
     <div id="tab-home" class="tab-content active">
       <div class="app-top-header">
         <div class="app-brand">
           <span>🚍</span> NOVAGO DATNET
         </div>
-        <a class="header-link" onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Team-Planer</a>
+        <a class="header-link" onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schicht-Planer</a>
       </div>
 
       <div class="hero-time-section">
@@ -611,21 +611,14 @@
           <span class="news-badge">SYSTEM</span>
           <div class="news-content">
             <div class="title">NovaGO DatNet v2.5 Online</div>
-            <div class="sub">Neues Dashboard, 10 Themes & Privat-Chat aktiv.</div>
+            <div class="sub">Dashboard, 10 Themes & Fahrgastzähler aktiv.</div>
           </div>
         </div>
         <div class="news-item">
           <span class="news-badge">INFO</span>
           <div class="news-content">
             <div class="title">Regulärer Fahrbetrieb</div>
-            <div class="sub">Alle Verbindungen laufen aktuell planmäßig.</div>
-          </div>
-        </div>
-        <div class="news-item">
-          <span class="news-badge">HINWEIS</span>
-          <div class="news-content">
-            <div class="title">Profil anpassen</div>
-            <div class="sub">Vergiss nicht, deinen Namen im Profil zu speichern.</div>
+            <div class="sub">Alle Schichten und Verbindungen planmäßig.</div>
           </div>
         </div>
       </div>
@@ -681,15 +674,18 @@
       </div>
     </div>
 
-    <!-- TAB 5: STATISTIK -->
+    <!-- TAB 5: STATISTIK & FAHRGASTZÄHLER -->
     <div id="tab-statistik" class="tab-content">
       <div class="card">
-        <h2>Statistik & Fahrgastzählen</h2>
-        <div class="counter-controls" style="margin: 1rem 0;">
+        <h2>Fahrgastzählung (SEV) & Statistik</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Erfasse hier ein- und aussteigende Fahrgäste während deines Schichtbetriebs.</p>
+        
+        <div class="counter-controls" style="margin: 1.5rem 0;">
           <button class="counter-btn" id="btnMinus">-</button>
           <span class="counter-display" id="countDisplay">0</span>
           <button class="counter-btn" id="btnPlus">+</button>
         </div>
+        
         <button id="btnResetCount" style="background: #dc2626;">Zähler zurücksetzen</button>
       </div>
     </div>
@@ -701,7 +697,7 @@
         
         <div class="chat-selector">
           <button id="btnChatPublic" class="active">Öffentlich</button>
-          <button id="btnChatPrivateSelect">Privat-Chat wählen</button>
+          <button id="btnChatPrivateSelect">Privat-Chat</button>
         </div>
 
         <div class="chat-box" id="chatBox">
@@ -859,6 +855,7 @@
     let currentUser = null;
     let activeChatTarget = "public";
     let activeChatTargetName = "Team-Chat (Öffentlich)";
+    let lastMessageCount = 0;
 
     const authStatus = document.getElementById("authStatus");
     const chatBox = document.getElementById("chatBox");
@@ -872,7 +869,26 @@
     const countDisplay = document.getElementById("countDisplay");
     let currentCount = 0;
 
-    // ZÄHLER (Im Statistik-Tab)
+    // Notification Sound (Web Audio API)
+    function playNotificationSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } catch (e) {
+        console.log("Audio precluded");
+      }
+    }
+
+    // ZÄHLER LOGIK (STATISTIK TAB)
     document.getElementById("btnPlus").addEventListener("click", () => {
       currentCount++;
       countDisplay.textContent = currentCount;
@@ -1040,7 +1056,9 @@
 
       chatUnsubscribe = onSnapshot(chatQuery, (snapshot) => {
         chatBox.innerHTML = "";
+        let msgCount = 0;
         snapshot.forEach((docSnap) => {
+          msgCount++;
           const data = docSnap.data();
           
           if (activeChatTarget === "public") {
@@ -1085,6 +1103,11 @@
           msgDiv.appendChild(bubbleContent);
           chatBox.appendChild(msgDiv);
         });
+
+        if (lastMessageCount > 0 && msgCount > lastMessageCount) {
+          playNotificationSound();
+        }
+        lastMessageCount = msgCount;
         chatBox.scrollTop = chatBox.scrollHeight;
       });
     }
