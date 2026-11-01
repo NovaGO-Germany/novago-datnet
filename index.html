@@ -357,7 +357,7 @@
     <button class="nav-btn" onclick="switchTab('owner', this)">Owner</button>
   </nav>
 
-  <!-- Firebase SDK Modules -->
+  <!-- Firebase SDK Modules & App Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -395,4 +395,135 @@
         await signInWithEmailAndPassword(auth, email, pass);
         authStatus.textContent = "Erfolgreich angemeldet!";
       } catch (err) {
-        authStatus.textContent = "Fehler:
+        authStatus.textContent = "Fehler: " + err.message;
+      }
+    });
+
+    document.getElementById("btnRegister").addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const pass = document.getElementById("authPassword").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        authStatus.textContent = "Konto erfolgreich erstellt!";
+      } catch (err) {
+        authStatus.textContent = "Fehler: " + err.message;
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (user) {
+        authStatus.textContent = `Angemeldet als: ${user.email}`;
+      } else {
+        authStatus.textContent = "Nicht angemeldet";
+      }
+    });
+
+    // WHATSAPP CHAT ENGINE
+    const chatRef = collection(db, "chat_messages");
+    const chatQuery = query(chatRef, orderBy("createdAt", "asc"));
+
+    onSnapshot(chatQuery, (snapshot) => {
+      chatBox.innerHTML = "";
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const msgId = docSnap.id;
+        const isMe = currentUser && currentUser.uid === data.senderUid;
+
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+
+        const senderName = data.sender || "Anonym";
+        const timeStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+        const editedTag = data.isEdited ? " (bearbeitet)" : "";
+
+        let actionsHtml = "";
+        if (isMe) {
+          actionsHtml = `
+            <div class="actions">
+              <button class="action-btn" onclick="editMessage('${msgId}', '${data.text.replace(/'/g, "\\'")}')">Bearbeiten</button>
+              <button class="action-btn" onclick="deleteMessage('${msgId}')">Löschen</button>
+            </div>
+          `;
+        }
+
+        msgDiv.innerHTML = `
+          <div class="sender">${senderName}</div>
+          <div>${data.text}</div>
+          <div class="meta">${timeStr}${editedTag}</div>
+          ${actionsHtml}
+        `;
+
+        chatBox.appendChild(msgDiv);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      const senderName = currentUser ? currentUser.email : "Fahrer (Anonym)";
+      const senderUid = currentUser ? currentUser.uid : "anon";
+
+      try {
+        await addDoc(chatRef, {
+          text: text,
+          sender: senderName,
+          senderUid: senderUid,
+          createdAt: serverTimestamp(),
+          isEdited: false
+        });
+        chatInput.value = "";
+      } catch (err) {
+        console.error("Fehler beim Senden:", err);
+      }
+    }
+
+    window.editMessage = async (msgId, currentText) => {
+      const newText = prompt("Nachricht bearbeiten:", currentText);
+      if (newText !== null && newText.trim() !== "" && newText !== currentText) {
+        try {
+          await updateDoc(doc(db, "chat_messages", msgId), {
+            text: newText.trim(),
+            isEdited: true
+          });
+        } catch (err) {
+          alert("Fehler beim Bearbeiten: " + err.message);
+        }
+      }
+    };
+
+    window.deleteMessage = async (msgId) => {
+      if (confirm("Möchtest du diese Nachricht wirklich löschen?")) {
+        try {
+          await deleteDoc(doc(db, "chat_messages", msgId));
+        } catch (err) {
+          alert("Fehler beim Löschen: " + err.message);
+        }
+      }
+    };
+
+    btnSendChat.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+
+  <!-- Globale Navigation Script -->
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      const target = document.getElementById('tab-' + tabId);
+      if (target) {
+        target.classList.add('active');
+      }
+      if (btn) {
+        btn.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>
