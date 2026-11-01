@@ -2,202 +2,349 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NovaGO DatNet</title>
   <style>
     :root {
-      --bg: #0f172a;
+      --bg-color: #0f172a;
       --card-bg: #1e293b;
-      --text: #f8fafc;
-      --accent: #38bdf8;
-      --danger: #ef4444;
-      --success: #22c55e;
-      --border: #334155;
+      --accent-color: #0ea5e9;
+      --accent-hover: #0284c7;
+      --text-color: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
     }
 
-    /* Themes */
-    body.theme-light { --bg: #f8fafc; --card-bg: #ffffff; --text: #0f172a; --accent: #0284c7; --border: #e2e8f0; }
-    body.theme-retro { --bg: #fef3c7; --card-bg: #fffbeb; --text: #78350f; --accent: #b45309; --border: #fde68a; }
-    body.theme-neon { --bg: #09090b; --card-bg: #18181b; --text: #22c55e; --accent: #a855f7; --border: #27272a; }
+    [data-theme="light"] {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --accent-color: #0284c7;
+      --accent-hover: #0369a1;
+      --text-color: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+    }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; min-height: 100vh; transition: all 0.3s ease; }
+    [data-theme="neon"] {
+      --bg-color: #050505;
+      --card-bg: #111111;
+      --accent-color: #39ff14;
+      --accent-hover: #32cd32;
+      --text-color: #ffffff;
+      --text-muted: #888888;
+      --border-color: #39ff14;
+    }
 
-    /* Header & Navigation */
-    header { background: var(--card-bg); padding: 16px; text-align: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
-    header h1 { font-size: 1.25rem; color: var(--accent); }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
 
-    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; }
-    .nav-item { background: none; border: none; color: var(--text); opacity: 0.6; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-    .nav-item.active { opacity: 1; color: var(--accent); font-weight: bold; }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-    /* Main Container */
-    main { padding: 16px; max-width: 600px; margin: 0 auto; }
-    .page { display: none; }
-    .page.active { display: block; }
+    header {
+      padding: 1.5rem 1rem 1rem;
+      text-align: center;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+    }
 
-    /* UI Components */
-    .card { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
-    .card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--accent); }
-    
-    label { display: block; font-size: 0.85rem; margin-bottom: 6px; opacity: 0.9; }
-    input, select, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); margin-bottom: 12px; font-size: 0.95rem; }
-    
-    .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--accent); color: #fff; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
-    .btn-danger { background: var(--danger); }
-    
-    /* Swipe Zählung */
-    .swipe-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; padding-bottom: 8px; }
-    .swipe-item { flex: 0 0 85%; scroll-snap-align: start; background: var(--bg); padding: 16px; border-radius: 10px; border: 1px solid var(--border); }
-    
-    .modified-red { color: var(--danger) !important; font-weight: bold; }
-    .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; background: var(--accent); color: #fff; margin-bottom: 8px; }
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .status-badge {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      background-color: rgba(14, 165, 233, 0.15);
+      color: var(--accent-color);
+    }
+
+    main {
+      flex: 1;
+      padding: 1rem;
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h2 {
+      font-size: 1.125rem;
+      margin-bottom: 0.75rem;
+      color: var(--accent-color);
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 0.375rem;
+    }
+
+    select, input, button {
+      width: 100%;
+      padding: 0.625rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      outline: none;
+    }
+
+    button {
+      background: var(--accent-color);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    .counter-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .counter-btn {
+      font-size: 1.25rem;
+      font-weight: bold;
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .counter-display {
+      flex: 1;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    nav {
+      position: sticky;
+      bottom: 0;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.5rem 0;
+    }
+
+    nav button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.5rem;
+      margin: 0;
+      width: auto;
+    }
+
+    nav button.active {
+      color: var(--accent-color);
+      font-weight: 700;
+    }
   </style>
 </head>
-<body class="theme-dark">
+<body data-theme="dark">
 
   <header>
     <h1>NovaGO DatNet</h1>
-    <div id="status-sev" class="badge">Regulärer Betrieb</div>
+    <span class="status-badge" id="appStatus">Regulärer Betrieb</span>
   </header>
 
   <main>
-    <!-- PAGE 1: SEV & Schichten -->
-    <section id="page-schichten" class="page active">
+    <!-- TAB 1: Schichten -->
+    <div id="tab-schichten" class="tab-content active">
       <div class="card">
-        <h2>Fahrterstellung & SEV</h2>
-        <label>Verkehrsmittel</label>
-        <select id="transport-type" onchange="updateFields()">
-          <option value="zug">Zug</option>
-          <option value="sev">SEV (Schienenersatzverkehr)</option>
-          <option value="bus">Bus</option>
-          <option value="sonder">Sonderfahrt</option>
+        <h2>Schichtverwaltung</h2>
+        <label for="shiftSelect">Aktive Schicht wählen</label>
+        <select id="shiftSelect">
+          <option>Frühschicht (06:00 - 14:00)</option>
+          <option>Spätschicht (14:00 - 22:00)</option>
+          <option>Nachtschicht (22:00 - 06:00)</option>
         </select>
-
-        <div id="dynamic-fields">
-          <label id="count-label">Personen im Zug</label>
-          <input type="number" id="passenger-count" placeholder="Anzahl eingeben">
-        </div>
-
-        <label>SEV Status-Steuerung</label>
-        <select id="sev-status" onchange="toggleSEVStatus()">
-          <option value="normal">Reguläre Fahrt</option>
-          <option value="sev-started">Fahrt fährt/fuhr als SEV</option>
-          <option value="sev-continued">Fahrt wurde als SEV fortgesetzt</option>
-        </select>
-
-        <button class="btn" onclick="saveShift()">Schicht speichern</button>
+        <button id="btnStartShift">Schicht starten</button>
       </div>
-    </section>
+    </div>
 
-    <!-- PAGE 2: Zählungen -->
-    <section id="page-zaehlungen" class="page">
+    <!-- TAB 2: Zählungen -->
+    <div id="tab-zaehlungen" class="tab-content">
       <div class="card">
-        <h2>Zählung & Swipe-Haltestellen</h2>
-        <label>Durchführendes Personal</label>
-        <select id="staff-select">
-          <option>Zähler 1 (Joshua)</option>
-          <option>Zähler 2 (Team)</option>
-        </select>
-
-        <label>Haltestellen (Wischen für nächste Station)</label>
-        <div class="swipe-container">
-          <div class="swipe-item">
-            <h3>Station 1: Hbf</h3>
-            <label>Einsteiger</label>
-            <input type="number" value="0">
-            <label>Aussteiger</label>
-            <input type="number" value="0">
-          </div>
-          <div class="swipe-item">
-            <h3>Station 2: Nordbahnhof <span class="modified-red">(Manuell geändert)</span></h3>
-            <label>Einsteiger</label>
-            <input type="number" value="0">
-            <label>Aussteiger</label>
-            <input type="number" value="0">
-          </div>
-          <div class="swipe-item">
-            <h3>Station 3: Endhaltestelle</h3>
-            <label>Einsteiger</label>
-            <input type="number" value="0">
-            <label>Aussteiger</label>
-            <input type="number" value="0">
-          </div>
-        </div>
-        <button class="btn" style="margin-top: 10px;" onclick="alert('Zählung zwischengespeichert!')">Zwischenspeichern</button>
-      </div>
-    </section>
-
-    <!-- PAGE 3: Statistik -->
-    <section id="page-statistik" class="page">
-      <div class="card">
-        <h2>Statistik-Modul</h2>
-        <div id="stats-lock-msg">
-          <p style="color: var(--danger);"><strong>Hinweis:</strong> Dieses Modul ist zeitgesteuert gesperrt. Erfassung und Freischaltung starten offiziell ab <strong>01.01.2027</strong>.</p>
+        <h2>Fahrgastzählung (SEV)</h2>
+        <div class="counter-controls">
+          <button class="counter-btn" id="btnMinus">-</button>
+          <span class="counter-display" id="countDisplay">0</span>
+          <button class="counter-btn" id="btnPlus">+</button>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- PAGE 4: Admin & Owner -->
-    <section id="page-admin" class="page">
+    <!-- TAB 3: Statistik -->
+    <div id="tab-statistik" class="tab-content">
       <div class="card">
-        <h2>Owner-Menü & Rechtesystem</h2>
-        <label>Design-Theme wählen</label>
-        <select onchange="changeTheme(this.value)">
-          <option value="theme-dark">Standard Clean (Dark)</option>
-          <option value="theme-light">Clean Light</option>
-          <option value="theme-retro">Retro Schulheft</option>
-          <option value="theme-neon">Neon Glow</option>
+        <h2>Auswertungen & Statistik</h2>
+        <p style="color: var(--text-muted); font-size: 0.875rem;">
+          Statistiken und erweiterte Analysen stehen ab 2027 zur Verfügung.
+        </p>
+      </div>
+    </div>
+
+    <!-- TAB 4: Owner / Einstellungen -->
+    <div id="tab-owner" class="tab-content">
+      <div class="card">
+        <h2>Owner-Menü & Einstellungen</h2>
+        <label for="themeSelect">Design-Theme wählen</label>
+        <select id="themeSelect">
+          <option value="dark">Standard Clean (Dark)</option>
+          <option value="light">Standard Clean (Light)</option>
+          <option value="neon">Neon Glow</option>
         </select>
 
-        <label>Team-Verwaltung & Direkt-Chat</label>
-        <div style="padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;">
-          <p><strong>Max Mustermann</strong> (Rang: User)</p>
-          <button class="btn" style="padding: 6px; margin-top: 5px; font-size: 0.8rem;" onclick="alert('Chat gestartet mit Max')">Direkt-Chat</button>
+        <h3 style="font-size: 0.875rem; margin: 1rem 0 0.5rem;">Benutzerkonto (Firebase)</h3>
+        <input type="email" id="authEmail" placeholder="E-Mail-Adresse">
+        <input type="password" id="authPassword" placeholder="Passwort">
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btnLogin">Anmelden</button>
+          <button id="btnRegister" style="background: var(--border-color);">Registrieren</button>
         </div>
+        <p id="authStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
       </div>
-    </section>
+    </div>
   </main>
 
-  <nav class="nav-bar">
-    <button class="nav-item active" onclick="showPage('schichten', this)">Schichten</button>
-    <button class="nav-item" onclick="showPage('zaehlungen', this)">Zählungen</button>
-    <button class="nav-item" onclick="showPage('statistik', this)">Statistik</button>
-    <button class="nav-item" onclick="showPage('admin', this)">Owner</button>
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('schichten', this)">Schichten</button>
+    <button class="nav-btn" onclick="switchTab('zaehlungen', this)">Zählungen</button>
+    <button class="nav-btn" onclick="switchTab('statistik', this)">Statistik</button>
+    <button class="nav-btn" onclick="switchTab('owner', this)">Owner</button>
   </nav>
 
-  <script>
-    function showPage(pageId, btn) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-      document.getElementById('page-' + pageId).classList.add('active');
-      btn.classList.add('active');
-    }
+  <!-- Firebase SDK Modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    function updateFields() {
-      const type = document.getElementById('transport-type').value;
-      const label = document.getElementById('count-label');
-      label.innerText = 'Personen im ' + type.toUpperCase();
-    }
+    // Echte Firebase Konfiguration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAvL5KTwN7h-fkc-tlHD7hKQRDzjRkS1Oo",
+      authDomain: "novago-datnet.firebaseapp.com",
+      projectId: "novago-datnet",
+      storageBucket: "novago-datnet.firebasestorage.app",
+      messagingSenderId: "1083028285400",
+      appId: "1:1083028285400:web:549b2727dbbae306b174ad",
+      measurementId: "G-GHCKHM3KC5"
+    };
 
-    function toggleSEVStatus() {
-      const status = document.getElementById('sev-status').value;
-      const badge = document.getElementById('status-sev');
-      if (status !== 'normal') {
-        badge.innerText = 'SEV AKTIV';
-        badge.style.background = 'var(--danger)';
-      } else {
-        badge.innerText = 'Regulärer Betrieb';
-        badge.style.background = 'var(--accent)';
+    // Firebase Initialisierung
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elemente & Variablen
+    let passengerCount = 0;
+    const countDisplay = document.getElementById("countDisplay");
+    const themeSelect = document.getElementById("themeSelect");
+    const authStatus = document.getElementById("authStatus");
+
+    // Zähler Logik
+    document.getElementById("btnPlus").addEventListener("click", () => {
+      passengerCount++;
+      countDisplay.textContent = passengerCount;
+    });
+
+    document.getElementById("btnMinus").addEventListener("click", () => {
+      if (passengerCount > 0) passengerCount--;
+      countDisplay.textContent = passengerCount;
+    });
+
+    // Theme Switcher
+    themeSelect.addEventListener("change", (e) => {
+      document.body.setAttribute("data-theme", e.target.value);
+    });
+
+    // Firebase Auth Logik
+    document.getElementById("btnLogin").addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const pass = document.getElementById("authPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        authStatus.textContent = "Erfolgreich angemeldet!";
+      } catch (err) {
+        authStatus.textContent = "Fehler: " + err.message;
       }
-    }
+    });
 
-    function changeTheme(themeName) {
-      document.body.className = themeName;
-    }
+    document.getElementById("btnRegister").addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const pass = document.getElementById("authPassword").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        authStatus.textContent = "Konto erfolgreich erstellt!";
+      } catch (err) {
+        authStatus.textContent = "Fehler: " + err.message;
+      }
+    });
 
-    function saveShift() {
-      alert('Schicht erfolgreich im System erfasst!');
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        authStatus.textContent = `Angemeldet als: ${user.email}`;
+      } else {
+        authStatus.textContent = "Nicht angemeldet";
+      }
+    });
+  </script>
+
+  <script>
+    // Tab Switching Navigation
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      btn.classList.add('active');
     }
   </script>
 </body>
