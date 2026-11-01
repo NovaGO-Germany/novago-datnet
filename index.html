@@ -159,7 +159,7 @@
       display: block;
     }
 
-    /* HEADER STYLE (WIE VORLAGE) */
+    /* HEADER */
     .app-top-header {
       display: flex;
       justify-content: space-between;
@@ -218,7 +218,7 @@
       margin-top: 0.2rem;
     }
 
-    /* CARDS (APPLE / FLUGMODUS DESIGN) */
+    /* CARDS */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -234,6 +234,84 @@
       text-transform: uppercase;
       color: var(--text-muted);
       margin-bottom: 0.75rem;
+    }
+
+    /* WETTER WIDGET */
+    .weather-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .weather-info .temp {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .weather-info .desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .weather-icon {
+      font-size: 2.5rem;
+    }
+
+    .weather-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .weather-actions input {
+      margin-bottom: 0;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .weather-actions button {
+      margin-bottom: 0;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      width: auto;
+    }
+
+    /* NEWS & NOTIFICATIONS */
+    .news-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .news-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .news-badge {
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-color);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+      margin-top: 0.1rem;
+    }
+
+    .news-content .title {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .news-content .sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
     }
 
     /* FORM & INPUTS */
@@ -495,7 +573,7 @@
 <body data-theme="midnight">
 
   <main>
-    <!-- TAB 1: HOME -->
+    <!-- TAB 1: HOME (WILLKOMMEN & INFO-DASHBOARD) -->
     <div id="tab-home" class="tab-content active">
       <div class="app-top-header">
         <div class="app-brand">
@@ -505,28 +583,60 @@
       </div>
 
       <div class="hero-time-section">
-        <div class="greeting-text" id="greetingText">Guten Tag</div>
+        <div class="greeting-text" id="greetingText">Willkommen</div>
         <div class="hero-clock" id="heroClock">00:00</div>
         <div class="hero-date" id="heroDate">Sonntag, 1. November</div>
       </div>
 
-      <!-- SCHICHT-ÜBERSICHT -->
+      <!-- WETTER WIDGET -->
       <div class="card">
-        <h2>Aktuelle Schicht</h2>
-        <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;" id="activeShiftDisplay">Keine Schicht aktiv</div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Wechsle in den Kalender, um deine Schicht zu starten.</p>
-        <button onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schicht verwalten</button>
+        <h2>Wetter vor Ort</h2>
+        <div class="weather-row">
+          <div class="weather-info">
+            <div class="temp" id="weatherTemp">8 °C</div>
+            <div class="desc" id="weatherDesc">Plauen · Leicht bewölkt · Wind 5 km/h</div>
+          </div>
+          <div class="weather-icon">⛅</div>
+        </div>
+        <div class="weather-actions">
+          <input type="text" id="locationInput" value="Plauen" placeholder="Ort eingeben">
+          <button id="btnUpdateWeather">Aktualisieren</button>
+        </div>
       </div>
 
-      <!-- FAHRGAST-ZÄHLER SCHNELLANSICHT -->
+      <!-- BENACHRICHTIGUNGEN & NEWSLEISTE -->
       <div class="card">
-        <h2>Fahrgast-Zähler</h2>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div style="font-size: 1.8rem; font-weight: 700;" id="homeCountDisplay">0</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Erfasste Fahrgäste heute</div>
+        <h2>Mitteilungen & News</h2>
+        <div class="news-item">
+          <span class="news-badge">SYSTEM</span>
+          <div class="news-content">
+            <div class="title">NovaGO DatNet v2.5 Online</div>
+            <div class="sub">Neues Dashboard, 10 Themes & Privat-Chat aktiv.</div>
           </div>
-          <button style="width: auto; padding: 0.5rem 1rem;" onclick="switchTab('statistik', document.getElementById('btnNavStatistik'))">Öffnen</button>
+        </div>
+        <div class="news-item">
+          <span class="news-badge">INFO</span>
+          <div class="news-content">
+            <div class="title">Regulärer Fahrbetrieb</div>
+            <div class="sub">Alle Verbindungen laufen aktuell planmäßig.</div>
+          </div>
+        </div>
+        <div class="news-item">
+          <span class="news-badge">HINWEIS</span>
+          <div class="news-content">
+            <div class="title">Profil anpassen</div>
+            <div class="sub">Vergiss nicht, deinen Namen im Profil zu speichern.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHNELLZUGRIFFE -->
+      <div class="card">
+        <h2>Schnellzugriffe</h2>
+        <div style="display: flex; gap: 0.5rem;">
+          <button onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schichten</button>
+          <button onclick="switchTab('chat', document.getElementById('btnNavChat'))" style="background: var(--border-color);">Team-Chat</button>
+          <button onclick="switchTab('statistik', document.getElementById('btnNavStatistik'))" style="background: var(--border-color);">Zähler</button>
         </div>
       </div>
     </div>
@@ -695,14 +805,14 @@
     document.getElementById('btnNavChat').onclick = function() { switchTab('chat', this); };
     document.getElementById('btnNavProfil').onclick = function() { switchTab('profil', this); };
 
-    // Live Uhrzeit & Begrüßung
+    // Live Uhrzeit & Dynamische Begrüßung
     function updateClockAndGreeting() {
       const now = new Date();
       const hours = now.getHours();
       const minutes = String(now.getMinutes()).padStart(2, '0');
       document.getElementById('heroClock').textContent = `${hours}:${minutes}`;
 
-      let greet = "Guten Tag";
+      let greet = "Willkommen";
       if (hours >= 5 && hours < 12) greet = "Guten Morgen";
       else if (hours >= 12 && hours < 18) greet = "Guten Tag";
       else if (hours >= 18 && hours < 22) greet = "Guten Abend";
@@ -716,6 +826,14 @@
     }
     setInterval(updateClockAndGreeting, 1000);
     updateClockAndGreeting();
+
+    // Wetter Suche / Update
+    document.getElementById('btnUpdateWeather').onclick = function() {
+      const loc = document.getElementById('locationInput').value;
+      if (loc) {
+        document.getElementById('weatherDesc').textContent = `${loc} · Bedingungen geladen`;
+      }
+    };
   </script>
 
   <!-- FIREBASE MODULE & APP LOGIC -->
@@ -752,33 +870,28 @@
     const userList = document.getElementById("userList");
 
     const countDisplay = document.getElementById("countDisplay");
-    const homeCountDisplay = document.getElementById("homeCountDisplay");
     let currentCount = 0;
 
-    // ZÄHLER
+    // ZÄHLER (Im Statistik-Tab)
     document.getElementById("btnPlus").addEventListener("click", () => {
       currentCount++;
       countDisplay.textContent = currentCount;
-      homeCountDisplay.textContent = currentCount;
     });
 
     document.getElementById("btnMinus").addEventListener("click", () => {
       if (currentCount > 0) currentCount--;
       countDisplay.textContent = currentCount;
-      homeCountDisplay.textContent = currentCount;
     });
 
     document.getElementById("btnResetCount").addEventListener("click", () => {
       currentCount = 0;
       countDisplay.textContent = "0";
-      homeCountDisplay.textContent = "0";
     });
 
     // SCHICHT
     document.getElementById("btnStartShift").addEventListener("click", () => {
       const shiftVal = document.getElementById("shiftSelect").value;
       document.getElementById("shiftStatusInfo").textContent = "Aktiv: " + shiftVal;
-      document.getElementById("activeShiftDisplay").textContent = shiftVal;
       alert("Schicht gestartet: " + shiftVal);
     });
 
