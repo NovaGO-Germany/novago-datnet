@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NovaGO DatNet</title>
   <style>
-    /* THEME DEFINITIONS */
+    /* DESIGN & THEMES (FLUGMODUS / PREMIUM DARK) */
     :root, [data-theme="dark"] {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
+      --bg-color: #0b0f19;
+      --card-bg: #141b2d;
       --accent-color: #0ea5e9;
       --accent-hover: #0284c7;
       --text-color: #f8fafc;
       --text-muted: #94a3b8;
-      --border-color: #334155;
+      --border-color: #1e293b;
       --chat-me: #059669;
-      --chat-other: #334155;
+      --chat-other: #1e293b;
     }
 
     [data-theme="light"] {
@@ -43,8 +43,8 @@
     }
 
     [data-theme="cyberpunk"] {
-      --bg-color: #120ef6;
-      --card-bg: #1a103c;
+      --bg-color: #0a0833;
+      --card-bg: #15104a;
       --accent-color: #ff0055;
       --accent-hover: #d60045;
       --text-color: #fcee0a;
@@ -55,27 +55,15 @@
     }
 
     [data-theme="ocean"] {
-      --bg-color: #031e30;
-      --card-bg: #0a2d42;
+      --bg-color: #021420;
+      --card-bg: #072233;
       --accent-color: #00d2ff;
       --accent-hover: #00a0c6;
       --text-color: #e0f7fa;
       --text-muted: #80deea;
-      --border-color: #154c71;
+      --border-color: #0f3854;
       --chat-me: #00838f;
-      --chat-other: #154c71;
-    }
-
-    [data-theme="emerald"] {
-      --bg-color: #062319;
-      --card-bg: #0d3829;
-      --accent-color: #10b981;
-      --accent-hover: #059669;
-      --text-color: #ecfdf5;
-      --text-muted: #6ee7b7;
-      --border-color: #1b5e46;
-      --chat-me: #047857;
-      --chat-other: #1b5e46;
+      --chat-other: #0f3854;
     }
 
     * {
@@ -94,37 +82,13 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
-    header {
-      padding: 1.25rem 1rem 0.75rem;
-      text-align: center;
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    header h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      letter-spacing: -0.025em;
-    }
-
-    .status-badge {
-      display: inline-block;
-      margin-top: 0.25rem;
-      padding: 0.2rem 0.6rem;
-      font-size: 0.7rem;
-      font-weight: 600;
-      border-radius: 9999px;
-      background-color: rgba(14, 165, 233, 0.15);
-      color: var(--accent-color);
-    }
-
     main {
       flex: 1;
-      padding: 1rem;
+      padding: 1.25rem 1rem;
       max-width: 600px;
       width: 100%;
       margin: 0 auto;
-      padding-bottom: 5rem;
+      padding-bottom: 6rem;
     }
 
     .tab-content {
@@ -135,21 +99,152 @@
       display: block;
     }
 
+    /* HEADER */
+    .app-top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      font-size: 0.9rem;
+    }
+
+    .app-brand span {
+      background: rgba(255,255,255,0.08);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.35rem;
+    }
+
+    .header-link {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .header-link:hover {
+      color: var(--text-color);
+    }
+
+    /* CLOCK SECTION */
+    .hero-time-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .greeting-text {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 0.1rem;
+    }
+
+    .hero-clock {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-date {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* CARDS */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 0.75rem;
+      border-radius: 1rem;
       padding: 1.25rem;
       margin-bottom: 1rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .card h2 {
-      font-size: 1.1rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
       margin-bottom: 0.75rem;
-      color: var(--accent-color);
     }
 
+    /* WEATHER */
+    .weather-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .weather-info .temp {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .weather-info .desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .weather-icon {
+      font-size: 2.5rem;
+    }
+
+    .weather-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .weather-actions input, .weather-actions button {
+      margin-bottom: 0;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    /* JOBS */
+    .job-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .job-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .job-time {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 90px;
+    }
+
+    .job-title {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .job-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* FORM & INPUTS */
     label {
       display: block;
       font-size: 0.85rem;
@@ -182,34 +277,7 @@
       background: var(--accent-hover);
     }
 
-    /* DASHBOARD GRID */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-
-    .dash-stat {
-      background: rgba(0,0,0,0.15);
-      border: 1px solid var(--border-color);
-      border-radius: 0.5rem;
-      padding: 0.75rem;
-      text-align: center;
-    }
-
-    .dash-stat .num {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--accent-color);
-    }
-
-    .dash-stat .label {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    /* COUNTER STYLING */
+    /* COUNTER */
     .counter-controls {
       display: flex;
       gap: 0.5rem;
@@ -233,7 +301,7 @@
       font-weight: bold;
     }
 
-    /* CHAT SELECTOR & CHAT ENGINE */
+    /* CHAT */
     .chat-selector {
       display: flex;
       gap: 0.5rem;
@@ -242,7 +310,7 @@
 
     .chat-selector button {
       flex: 1;
-      padding: 0.5rem;
+      padding: 0.4rem;
       font-size: 0.75rem;
       margin-bottom: 0;
       background: transparent;
@@ -257,7 +325,7 @@
     }
 
     .chat-box {
-      height: 320px;
+      height: 300px;
       overflow-y: auto;
       border: 1px solid var(--border-color);
       background: rgba(0,0,0,0.15);
@@ -332,11 +400,11 @@
 
     .chat-input-container button {
       width: auto;
-      padding: 0.625rem 1.25rem;
+      padding: 0.6rem 1rem;
       margin-bottom: 0;
     }
 
-    /* MITARBEITER LISTE */
+    /* TEAM */
     .user-list {
       display: flex;
       flex-direction: column;
@@ -352,11 +420,6 @@
       background: rgba(0,0,0,0.15);
       border: 1px solid var(--border-color);
       cursor: pointer;
-      transition: border-color 0.2s;
-    }
-
-    .user-card:hover {
-      border-color: var(--accent-color);
     }
 
     .user-card img {
@@ -380,7 +443,7 @@
       color: var(--text-muted);
     }
 
-    /* PROFILE PREVIEW */
+    /* PROFILE */
     .profile-preview {
       display: flex;
       align-items: center;
@@ -396,7 +459,7 @@
       border: 2px solid var(--accent-color);
     }
 
-    /* FOOTER NAVIGATION */
+    /* 7-BUTTON BOTTOM NAVIGATION BAR */
     nav {
       position: fixed;
       bottom: 0;
@@ -406,7 +469,7 @@
       border-top: 1px solid var(--border-color);
       display: flex;
       justify-content: space-around;
-      padding: 0.5rem 0;
+      padding: 0.4rem 0.2rem;
       z-index: 100;
     }
 
@@ -414,15 +477,21 @@
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 500;
-      padding: 0.4rem;
+      padding: 0.3rem 0.1rem;
       margin: 0;
       width: auto;
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.2rem;
+      gap: 0.15rem;
+      cursor: pointer;
+    }
+
+    nav button span.nav-icon {
+      font-size: 1.1rem;
     }
 
     nav button.active {
@@ -433,28 +502,78 @@
 </head>
 <body data-theme="dark">
 
-  <header>
-    <h1>NovaGO DatNet</h1>
-    <span class="status-badge" id="appStatus">Regulärer Betrieb</span>
-  </header>
-
   <main>
-    <!-- TAB 1: Startseite & Schichten -->
-    <div id="tab-schichten" class="tab-content active">
+    <!-- TAB 1: HOME -->
+    <div id="tab-home" class="tab-content active">
+      <div class="app-top-header">
+        <div class="app-brand">
+          <span>✈️</span> FLUGMODUS
+        </div>
+        <a class="header-link" onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Team-Planer</a>
+      </div>
+
+      <div class="hero-time-section">
+        <div class="greeting-text" id="greetingText">Guten Tag</div>
+        <div class="hero-clock" id="heroClock">00:00</div>
+        <div class="hero-date" id="heroDate">Sonntag, 1. November</div>
+      </div>
+
+      <!-- WEATHER WIDGET -->
       <div class="card">
-        <h2>Startseite & Schicht-Dashboard</h2>
-        
-        <div class="dashboard-grid">
-          <div class="dash-stat">
-            <div class="num" id="dashShiftStatus">Inaktiv</div>
-            <div class="label">Schicht-Status</div>
+        <h2>Wetter vor Ort</h2>
+        <div class="weather-row">
+          <div class="weather-info">
+            <div class="temp" id="weatherTemp">5 °C</div>
+            <div class="desc" id="weatherDesc">Plauen · Teilweise bewölkt · Wind 4 km/h</div>
           </div>
-          <div class="dash-stat">
-            <div class="num" id="dashTotalCount">0</div>
-            <div class="label">Erfasste Fahrgäste</div>
+          <div class="weather-icon">⛅</div>
+        </div>
+        <div class="weather-actions">
+          <input type="text" id="locationInput" value="Plauen" placeholder="Ort eingeben">
+          <button id="btnUpdateWeather">Anzeigen</button>
+        </div>
+      </div>
+
+      <!-- NÄCHSTE AUFTRÄGE -->
+      <div class="card">
+        <h2>Nächste Aufträge</h2>
+        <div class="job-item">
+          <div class="job-time">Morgen<br><span style="font-weight: normal;">15:30</span></div>
+          <div>
+            <div class="job-title">JungexKultur</div>
           </div>
         </div>
+        <div class="job-item">
+          <div class="job-time">Di, 3. Nov.<br><span style="font-weight: normal;">13:45</span></div>
+          <div>
+            <div class="job-title">Friseur</div>
+          </div>
+        </div>
+        <div class="job-item">
+          <div class="job-time">Fr, 13. Nov.<br><span style="font-weight: normal;">15:30</span></div>
+          <div>
+            <div class="job-title">JungeXKultur Bandcamp</div>
+            <div class="job-sub">4 Geräte</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- TAB 2: TEAM -->
+    <div id="tab-team" class="tab-content">
+      <div class="card">
+        <h2>Mitarbeiter & Kontakte</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Klicke auf einen Mitarbeiter, um einen privaten Chat zu starten.</p>
+        <div class="user-list" id="userList">
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Lade Teammitglieder...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: KALENDER / SCHICHTEN -->
+    <div id="tab-kalender" class="tab-content">
+      <div class="card">
+        <h2>Schichtverwaltung & Kalender</h2>
         <label for="shiftSelect">Aktive Schicht wählen</label>
         <select id="shiftSelect">
           <option>Frühschicht (06:00 - 14:00)</option>
@@ -463,31 +582,37 @@
           <option>Sonderschicht / SEV</option>
         </select>
         <button id="btnStartShift">Schicht starten</button>
-      </div>
-
-      <div class="card">
-        <h2>Schnellzugriff</h2>
-        <div style="display: flex; gap: 0.5rem;">
-          <button onclick="switchTab('zaehlungen', document.getElementById('btnNavZaehlungen'))">Fahrgast Zählen</button>
-          <button onclick="switchTab('chat', document.getElementById('btnNavChat'))" style="background: var(--border-color);">Team-Chat</button>
-        </div>
+        <p id="shiftStatusInfo" style="font-size: 0.8rem; color: var(--accent-color); margin-top: 0.5rem;"></p>
       </div>
     </div>
 
-    <!-- TAB 2: Zählungen -->
-    <div id="tab-zaehlungen" class="tab-content">
+    <!-- TAB 4: TECHNIK -->
+    <div id="tab-technik" class="tab-content">
       <div class="card">
-        <h2>Fahrgastzählung (SEV)</h2>
-        <div class="counter-controls">
+        <h2>Technik & Geräte</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Übersicht der aktiven Ausrüstung und Gerätestatus.</p>
+        <ul style="margin-left: 1.25rem; font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-color);">
+          <li>Funkgerät Einheit A - Bereit</li>
+          <li>Zählgerät SEV 02 - Aktiv</li>
+          <li>DatNet Router #4 - Verbunden</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TAB 5: STATISTIK -->
+    <div id="tab-statistik" class="tab-content">
+      <div class="card">
+        <h2>Statistik & Fahrgastzählen</h2>
+        <div class="counter-controls" style="margin: 1rem 0;">
           <button class="counter-btn" id="btnMinus">-</button>
           <span class="counter-display" id="countDisplay">0</span>
           <button class="counter-btn" id="btnPlus">+</button>
         </div>
-        <button id="btnResetCount" style="background: #dc2626; margin-top: 1rem;">Zähler zurücksetzen</button>
+        <button id="btnResetCount" style="background: #dc2626;">Zähler zurücksetzen</button>
       </div>
     </div>
 
-    <!-- TAB 3: Team & Privat-Chat -->
+    <!-- TAB 6: CHAT -->
     <div id="tab-chat" class="tab-content">
       <div class="card">
         <h2 id="chatTitle">Team-Chat (Öffentlich)</h2>
@@ -508,18 +633,7 @@
       </div>
     </div>
 
-    <!-- TAB 4: Mitarbeiter (Direkt-Chats) -->
-    <div id="tab-mitarbeiter" class="tab-content">
-      <div class="card">
-        <h2>Mitarbeiter & Kontakte</h2>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Klicke auf einen Mitarbeiter, um einen privaten Chat zu starten.</p>
-        <div class="user-list" id="userList">
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Lade Teammitglieder...</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 5: Profil & Einstellungen -->
+    <!-- TAB 7: PROFIL & EINSTELLUNGEN -->
     <div id="tab-profil" class="tab-content">
       <div class="card">
         <h2>Profil & Einstellungen</h2>
@@ -560,26 +674,28 @@
         <h2>App-Design & Themes</h2>
         <label for="themeSelect">Design wählen</label>
         <select id="themeSelect">
-          <option value="dark">Dark Slate (Klassisch)</option>
+          <option value="dark">Dark Slate (Standard)</option>
           <option value="light">Light Clean (Hell)</option>
           <option value="neon">Neon Glow (Grell)</option>
           <option value="cyberpunk">Cyberpunk 2077</option>
           <option value="ocean">Oceanic Deep (Blau)</option>
-          <option value="emerald">Emerald Bus (Grün)</option>
         </select>
       </div>
     </div>
   </main>
 
+  <!-- 7-BUTTON BOTTOM NAVIGATION BAR -->
   <nav>
-    <button class="nav-btn active" id="btnNavSchichten">Start</button>
-    <button class="nav-btn" id="btnNavZaehlungen">Zählung</button>
-    <button class="nav-btn" id="btnNavChat">Chat</button>
-    <button class="nav-btn" id="btnNavMitarbeiter">Team</button>
-    <button class="nav-btn" id="btnNavProfil">Profil</button>
+    <button class="nav-btn active" id="btnNavHome"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" id="btnNavTeam"><span class="nav-icon">👥</span>Team</button>
+    <button class="nav-btn" id="btnNavKalender"><span class="nav-icon">📅</span>Kalender</button>
+    <button class="nav-btn" id="btnNavTechnik"><span class="nav-icon">📷</span>Technik</button>
+    <button class="nav-btn" id="btnNavStatistik"><span class="nav-icon">📊</span>Statistik</button>
+    <button class="nav-btn" id="btnNavChat"><span class="nav-icon">💬</span>Chat</button>
+    <button class="nav-btn" id="btnNavProfil"><span class="nav-icon">👤</span>Profil</button>
   </nav>
 
-  <!-- NAVIGATION SCRIPT -->
+  <!-- NAVIGATION & LIVE CLOCK SCRIPT -->
   <script>
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -594,14 +710,44 @@
       }
     }
 
-    document.getElementById('btnNavSchichten').onclick = function() { switchTab('schichten', this); };
-    document.getElementById('btnNavZaehlungen').onclick = function() { switchTab('zaehlungen', this); };
+    document.getElementById('btnNavHome').onclick = function() { switchTab('home', this); };
+    document.getElementById('btnNavTeam').onclick = function() { switchTab('team', this); };
+    document.getElementById('btnNavKalender').onclick = function() { switchTab('kalender', this); };
+    document.getElementById('btnNavTechnik').onclick = function() { switchTab('technik', this); };
+    document.getElementById('btnNavStatistik').onclick = function() { switchTab('statistik', this); };
     document.getElementById('btnNavChat').onclick = function() { switchTab('chat', this); };
-    document.getElementById('btnNavMitarbeiter').onclick = function() { switchTab('mitarbeiter', this); };
     document.getElementById('btnNavProfil').onclick = function() { switchTab('profil', this); };
+
+    // Live Uhrzeit & Begrüßung
+    function updateClockAndGreeting() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('heroClock').textContent = `${hours}:${minutes}`;
+
+      let greet = "Guten Tag";
+      if (hours >= 5 && hours < 12) greet = "Guten Morgen";
+      else if (hours >= 12 && hours < 18) greet = "Guten Tag";
+      else if (hours >= 18 && hours < 22) greet = "Guten Abend";
+      else greet = "Gute Nacht";
+
+      const namePart = window.currentUserName ? `, ${window.currentUserName}` : "";
+      document.getElementById('greetingText').textContent = `${greet}${namePart}`;
+
+      const options = { weekday: 'long', day: 'numeric', month: 'long' };
+      document.getElementById('heroDate').textContent = now.toLocaleDateString('de-DE', options);
+    }
+    setInterval(updateClockAndGreeting, 1000);
+    updateClockAndGreeting();
+
+    // Wetter Suche
+    document.getElementById('btnUpdateWeather').onclick = function() {
+      const loc = document.getElementById('locationInput').value;
+      document.getElementById('weatherDesc').textContent = `${loc} · Aktuelle Bedingungen`;
+    };
   </script>
 
-  <!-- FIREBASE MODULE & LOGIC -->
+  <!-- FIREBASE MODULE & APP LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -622,10 +768,9 @@
     const db = getFirestore(app);
 
     let currentUser = null;
-    let activeChatTarget = "public"; // "public" or recipientUid
+    let activeChatTarget = "public";
     let activeChatTargetName = "Team-Chat (Öffentlich)";
 
-    // UI ELEMENTS
     const authStatus = document.getElementById("authStatus");
     const chatBox = document.getElementById("chatBox");
     const chatInput = document.getElementById("chatInput");
@@ -636,43 +781,37 @@
     const userList = document.getElementById("userList");
 
     const countDisplay = document.getElementById("countDisplay");
-    const dashTotalCount = document.getElementById("dashTotalCount");
-    const dashShiftStatus = document.getElementById("dashShiftStatus");
     let currentCount = 0;
 
-    // FAHRGAST ZÄHLER
+    // ZÄHLER
     document.getElementById("btnPlus").addEventListener("click", () => {
       currentCount++;
       countDisplay.textContent = currentCount;
-      dashTotalCount.textContent = currentCount;
     });
 
     document.getElementById("btnMinus").addEventListener("click", () => {
       if (currentCount > 0) currentCount--;
       countDisplay.textContent = currentCount;
-      dashTotalCount.textContent = currentCount;
     });
 
     document.getElementById("btnResetCount").addEventListener("click", () => {
       currentCount = 0;
       countDisplay.textContent = "0";
-      dashTotalCount.textContent = "0";
     });
 
-    // SCHICHT STARTEN
+    // SCHICHT
     document.getElementById("btnStartShift").addEventListener("click", () => {
       const shiftVal = document.getElementById("shiftSelect").value;
-      dashShiftStatus.textContent = "Aktiv";
-      dashShiftStatus.style.color = "var(--accent-color)";
+      document.getElementById("shiftStatusInfo").textContent = "Aktiv: " + shiftVal;
       alert("Schicht gestartet: " + shiftVal);
     });
 
-    // THEME SWITCHER
+    // THEME
     document.getElementById("themeSelect").addEventListener("change", (e) => {
       document.body.setAttribute("data-theme", e.target.value);
     });
 
-    // AUTHENTICATION & PROFILE
+    // AUTH
     document.getElementById("btnLogin").addEventListener("click", async () => {
       const email = document.getElementById("authEmail").value;
       const pass = document.getElementById("authPassword").value;
@@ -724,8 +863,9 @@
 
         authStatus.textContent = "Profil gespeichert!";
         document.getElementById("profilePreviewImg").src = newPhoto || "https://via.placeholder.com/60";
+        window.currentUserName = newName || auth.currentUser.email.split('@')[0];
       } catch (err) {
-        authStatus.textContent = "Fehler beim Speichern: " + err.message;
+        authStatus.textContent = "Fehler: " + err.message;
       }
     });
 
@@ -740,27 +880,28 @@
         document.getElementById("profileAvatarUrl").value = user.photoURL || "";
         if (user.photoURL) document.getElementById("profilePreviewImg").src = user.photoURL;
 
-        // Ensure User Doc exists
+        window.currentUserName = user.displayName || user.email.split('@')[0];
+
         await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName || user.email.split('@')[0],
           photoURL: user.photoURL || ""
         }, { merge: true });
-
       } else {
         authStatus.textContent = "Nicht angemeldet";
         document.getElementById("loggedOutSection").style.display = "block";
         document.getElementById("loggedInSection").style.display = "none";
+        window.currentUserName = "Joshua";
       }
     });
 
-    // MITARBEITER LISTE LADEN
+    // TEAM LIST
     onSnapshot(collection(db, "users"), (snapshot) => {
       userList.innerHTML = "";
       snapshot.forEach((docSnap) => {
         const uData = docSnap.data();
-        if (currentUser && uData.uid === currentUser.uid) return; // Skip self
+        if (currentUser && uData.uid === currentUser.uid) return;
 
         const userCard = document.createElement("div");
         userCard.className = "user-card";
@@ -791,7 +932,7 @@
       });
     });
 
-    // CHAT ENGINE SWITCHER
+    // CHAT ENGINE
     btnChatPublic.onclick = () => {
       activeChatTarget = "public";
       activeChatTargetName = "Team-Chat (Öffentlich)";
@@ -806,20 +947,16 @@
     function loadChatMessages() {
       if (chatUnsubscribe) chatUnsubscribe();
 
-      const chatRef = collection(db, "chat_messages");
-      const chatQuery = query(chatRef, orderBy("createdAt", "asc"));
+      const chatQuery = query(collection(db, "chat_messages"), orderBy("createdAt", "asc"));
 
       chatUnsubscribe = onSnapshot(chatQuery, (snapshot) => {
         chatBox.innerHTML = "";
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
-          const msgId = docSnap.id;
           
-          // Filter public vs private
           if (activeChatTarget === "public") {
             if (data.target && data.target !== "public") return;
           } else {
-            // Private chat filtering
             const isPrivateMatch = (data.senderUid === currentUser?.uid && data.target === activeChatTarget) ||
                                    (data.senderUid === activeChatTarget && data.target === currentUser?.uid);
             if (!isPrivateMatch) return;
@@ -891,7 +1028,6 @@
       if (e.key === "Enter") sendMessage();
     });
 
-    // Initial Load
     loadChatMessages();
   </script>
 </body>
