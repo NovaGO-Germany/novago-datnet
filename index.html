@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NovaGO DatNet</title>
   <style>
-    /* DESIGN & THEMES (FLUGMODUS / PREMIUM DARK) */
+    /* DESIGN & THEMES */
     :root, [data-theme="dark"] {
       --bg-color: #0b0f19;
       --card-bg: #141b2d;
@@ -112,26 +112,15 @@
       align-items: center;
       gap: 0.5rem;
       font-weight: 700;
-      letter-spacing: 0.1em;
-      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      font-size: 0.95rem;
     }
 
     .app-brand span {
-      background: rgba(255,255,255,0.08);
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-color);
       padding: 0.3rem 0.5rem;
       border-radius: 0.35rem;
-    }
-
-    .header-link {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .header-link:hover {
-      color: var(--text-color);
     }
 
     /* CLOCK SECTION */
@@ -169,79 +158,11 @@
     }
 
     .card h2 {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-muted);
       margin-bottom: 0.75rem;
-    }
-
-    /* WEATHER */
-    .weather-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .weather-info .temp {
-      font-size: 2rem;
-      font-weight: 700;
-    }
-
-    .weather-info .desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 0.1rem;
-    }
-
-    .weather-icon {
-      font-size: 2.5rem;
-    }
-
-    .weather-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
-    .weather-actions input, .weather-actions button {
-      margin-bottom: 0;
-      padding: 0.5rem;
-      font-size: 0.8rem;
-    }
-
-    /* JOBS */
-    .job-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .job-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .job-time {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      min-width: 90px;
-    }
-
-    .job-title {
-      flex: 1;
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .job-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 0.15rem;
     }
 
     /* FORM & INPUTS */
@@ -507,9 +428,9 @@
     <div id="tab-home" class="tab-content active">
       <div class="app-top-header">
         <div class="app-brand">
-          <span>✈️</span> FLUGMODUS
+          <span>🚌</span> NOVAGO DATNET
         </div>
-        <a class="header-link" onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Team-Planer</a>
+        <div style="font-size: 0.8rem; color: var(--accent-color); font-weight: 600;" id="statusBadgeHome">Regulärer Betrieb</div>
       </div>
 
       <div class="hero-time-section">
@@ -518,43 +439,23 @@
         <div class="hero-date" id="heroDate">Sonntag, 1. November</div>
       </div>
 
-      <!-- WEATHER WIDGET -->
+      <!-- SCHICHT-SCHNELLÜBERSICHT -->
       <div class="card">
-        <h2>Wetter vor Ort</h2>
-        <div class="weather-row">
-          <div class="weather-info">
-            <div class="temp" id="weatherTemp">5 °C</div>
-            <div class="desc" id="weatherDesc">Plauen · Teilweise bewölkt · Wind 4 km/h</div>
-          </div>
-          <div class="weather-icon">⛅</div>
-        </div>
-        <div class="weather-actions">
-          <input type="text" id="locationInput" value="Plauen" placeholder="Ort eingeben">
-          <button id="btnUpdateWeather">Anzeigen</button>
-        </div>
+        <h2>Aktive Schicht</h2>
+        <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;" id="activeShiftDisplay">Keine Schicht aktiv</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Wechsle in den Kalender, um deine Schicht zu starten.</p>
+        <button onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schicht verwalten</button>
       </div>
 
-      <!-- NÄCHSTE AUFTRÄGE -->
+      <!-- SCHNELLZUGRIFF STATISTIK -->
       <div class="card">
-        <h2>Nächste Aufträge</h2>
-        <div class="job-item">
-          <div class="job-time">Morgen<br><span style="font-weight: normal;">15:30</span></div>
+        <h2>Fahrgast-Zähler</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
           <div>
-            <div class="job-title">JungexKultur</div>
+            <div style="font-size: 1.8rem; font-weight: 700;" id="homeCountDisplay">0</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Erfasste Fahrgäste heute</div>
           </div>
-        </div>
-        <div class="job-item">
-          <div class="job-time">Di, 3. Nov.<br><span style="font-weight: normal;">13:45</span></div>
-          <div>
-            <div class="job-title">Friseur</div>
-          </div>
-        </div>
-        <div class="job-item">
-          <div class="job-time">Fr, 13. Nov.<br><span style="font-weight: normal;">15:30</span></div>
-          <div>
-            <div class="job-title">JungeXKultur Bandcamp</div>
-            <div class="job-sub">4 Geräte</div>
-          </div>
+          <button style="width: auto; padding: 0.5rem 1rem;" onclick="switchTab('statistik', document.getElementById('btnNavStatistik'))">Öffnen</button>
         </div>
       </div>
     </div>
@@ -739,12 +640,6 @@
     }
     setInterval(updateClockAndGreeting, 1000);
     updateClockAndGreeting();
-
-    // Wetter Suche
-    document.getElementById('btnUpdateWeather').onclick = function() {
-      const loc = document.getElementById('locationInput').value;
-      document.getElementById('weatherDesc').textContent = `${loc} · Aktuelle Bedingungen`;
-    };
   </script>
 
   <!-- FIREBASE MODULE & APP LOGIC -->
@@ -781,28 +676,33 @@
     const userList = document.getElementById("userList");
 
     const countDisplay = document.getElementById("countDisplay");
+    const homeCountDisplay = document.getElementById("homeCountDisplay");
     let currentCount = 0;
 
     // ZÄHLER
     document.getElementById("btnPlus").addEventListener("click", () => {
       currentCount++;
       countDisplay.textContent = currentCount;
+      homeCountDisplay.textContent = currentCount;
     });
 
     document.getElementById("btnMinus").addEventListener("click", () => {
       if (currentCount > 0) currentCount--;
       countDisplay.textContent = currentCount;
+      homeCountDisplay.textContent = currentCount;
     });
 
     document.getElementById("btnResetCount").addEventListener("click", () => {
       currentCount = 0;
       countDisplay.textContent = "0";
+      homeCountDisplay.textContent = "0";
     });
 
     // SCHICHT
     document.getElementById("btnStartShift").addEventListener("click", () => {
       const shiftVal = document.getElementById("shiftSelect").value;
       document.getElementById("shiftStatusInfo").textContent = "Aktiv: " + shiftVal;
+      document.getElementById("activeShiftDisplay").textContent = shiftVal;
       alert("Schicht gestartet: " + shiftVal);
     });
 
@@ -892,7 +792,7 @@
         authStatus.textContent = "Nicht angemeldet";
         document.getElementById("loggedOutSection").style.display = "block";
         document.getElementById("loggedInSection").style.display = "none";
-        window.currentUserName = "Joshua";
+        window.currentUserName = "";
       }
     });
 
