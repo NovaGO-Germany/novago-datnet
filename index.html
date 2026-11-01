@@ -407,11 +407,32 @@
   </main>
 
   <nav>
-    <button class="nav-btn active" onclick="switchTab('schichten', this)">Schichten</button>
-    <button class="nav-btn" onclick="switchTab('zaehlungen', this)">Zählungen</button>
-    <button class="nav-btn" onclick="switchTab('chat', this)">Chat</button>
-    <button class="nav-btn" onclick="switchTab('profil', this)">Profil</button>
+    <button class="nav-btn active" id="btnNavSchichten">Schichten</button>
+    <button class="nav-btn" id="btnNavZaehlungen">Zählungen</button>
+    <button class="nav-btn" id="btnNavChat">Chat</button>
+    <button class="nav-btn" id="btnNavProfil">Profil</button>
   </nav>
+
+  <!-- Navigation JS (Garantiert fehlerfrei vor allen Modulen) -->
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      var target = document.getElementById('tab-' + tabId);
+      if (target) {
+        target.classList.add('active');
+      }
+      if (btn) {
+        btn.classList.add('active');
+      }
+    }
+
+    document.getElementById('btnNavSchichten').onclick = function() { switchTab('schichten', this); };
+    document.getElementById('btnNavZaehlungen').onclick = function() { switchTab('zaehlungen', this); };
+    document.getElementById('btnNavChat').onclick = function() { switchTab('chat', this); };
+    document.getElementById('btnNavProfil').onclick = function() { switchTab('profil', this); };
+  </script>
 
   <!-- Firebase SDK Modules & App Logic -->
   <script type="module">
@@ -448,3 +469,202 @@
     const profilePreviewImg = document.getElementById("profilePreviewImg");
 
     function playNotificationSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } catch (e) {
+        console.log("Audio precluded");
+      }
+    }
+
+    document.getElementById("themeSelect").addEventListener("change", (e) => {
+      document.body.setAttribute("data-theme", e.target.value);
+    });
+
+    document.getElementById("btnLogin").addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const pass = document.getElementById("authPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        authStatus.textContent = "Erfolgreich angemeldet!";
+      } catch (err) {
+        authStatus.textContent = "Fehler: " + err.message;
+      }
+    });
+
+    document.getElementById("btnRegister").addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const pass = document.getElementById("authPassword").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        authStatus.textContent = "Konto erfolgreich erstellt!";
+      } catch (err) {
+        authStatus.textContent = "Fehler: " + err.message;
+      }
+    });
+
+    document.getElementById("btnLogout").addEventListener("click", async () => {
+      await signOut(auth);
+      authStatus.textContent = "Erfolgreich abgemeldet.";
+    });
+
+    document.getElementById("btnSaveProfile").addEventListener("click", async () => {
+      if (!auth.currentUser) return;
+      try {
+        const newName = profileName.value.trim();
+        const newPhoto = profileAvatarUrl.value.trim();
+        await updateProfile(auth.currentUser, {
+          displayName: newName || null,
+          photoURL: newPhoto || null
+        });
+        authStatus.textContent = "Profil erfolgreich gespeichert!";
+        profilePreviewImg.src = newPhoto || "https://via.placeholder.com/60";
+      } catch (err) {
+        authStatus.textContent = "Fehler beim Speichern: " + err.message;
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (user) {
+        authStatus.textContent = `Angemeldet als: ${user.email}`;
+        loggedOutSection.style.display = "none";
+        loggedInSection.style.display = "block";
+        profileUserEmail.textContent = user.email;
+        profileName.value = user.displayName || "";
+        profileAvatarUrl.value = user.photoURL || "";
+        if (user.photoURL) {
+          profilePreviewImg.src = user.photoURL;
+        }
+      } else {
+        authStatus.textContent = "Nicht angemeldet";
+        loggedOutSection.style.display = "block";
+        loggedInSection.style.display = "none";
+      }
+    });
+
+    // CHAT ENGINE
+    const chatRef = collection(db, "chat_messages");
+    const chatQuery = query(chatRef, orderBy("createdAt", "asc"));
+
+    onSnapshot(chatQuery, (snapshot) => {
+      chatBox.innerHTML = "";
+      let msgCount = 0;
+
+      snapshot.forEach((docSnap) => {
+        msgCount++;
+        const data = docSnap.data();
+        const msgId = docSnap.id;
+        const isMe = currentUser && currentUser.uid === data.senderUid;
+
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+
+        const senderName = data.senderName || "Anonym";
+        const avatarUrl = data.senderAvatar || "https://via.placeholder.com/30";
+        const timeStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+        const editedTag = data.isEdited ? " (bearbeitet)" : "";
+
+        let actionsContainer = document.createElement("div");
+        actionsContainer.className = "actions";
+
+        if (isMe) {
+          const btnEdit = document.createElement("button");
+          btnEdit.className = "action-btn";
+          btnEdit.textContent = "Bearbeiten";
+          btnEdit.onclick = async () => {
+            const newText = prompt("Nachricht bearbeiten:", data.text);
+            if (newText && newText.trim() !== "" && newText !== data.text) {
+              await updateDoc(doc(db, "chat_messages", msgId), { text: newText.trim(), isEdited: true });
+            }
+          };
+
+          const btnDelete = document.createElement("button");
+          btnDelete.className = "action-btn";
+          btnDelete.textContent = "Löschen";
+          btnDelete.onclick = async () => {
+            if (confirm("Möchtest du diese Nachricht löschen?")) {
+              await deleteDoc(doc(db, "chat_messages", msgId));
+            }
+          };
+
+          actionsContainer.appendChild(btnEdit);
+          actionsContainer.appendChild(btnDelete);
+        }
+
+        const avatarImg = document.createElement("img");
+        avatarImg.className = "chat-avatar";
+        avatarImg.src = avatarUrl;
+        avatarImg.alt = "Avatar";
+
+        const bubbleContent = document.createElement("div");
+        bubbleContent.className = "chat-bubble-content";
+
+        const senderDiv = document.createElement("div");
+        senderDiv.className = "sender";
+        senderDiv.textContent = senderName;
+
+        const textDiv = document.createElement("div");
+        textDiv.textContent = data.text;
+
+        const metaDiv = document.createElement("div");
+        metaDiv.className = "meta";
+        metaDiv.textContent = timeStr + editedTag;
+
+        bubbleContent.appendChild(senderDiv);
+        bubbleContent.appendChild(textDiv);
+        bubbleContent.appendChild(metaDiv);
+        if (isMe) bubbleContent.appendChild(actionsContainer);
+
+        msgDiv.appendChild(avatarImg);
+        msgDiv.appendChild(bubbleContent);
+
+        chatBox.appendChild(msgDiv);
+      });
+
+      if (lastMessageCount > 0 && msgCount > lastMessageCount) {
+        playNotificationSound();
+      }
+      lastMessageCount = msgCount;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      const senderName = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : "Fahrer (Anonym)";
+      const senderUid = currentUser ? currentUser.uid : "anon";
+      const senderAvatar = currentUser ? (currentUser.photoURL || "") : "";
+
+      try {
+        await addDoc(chatRef, {
+          text: text,
+          senderName: senderName,
+          senderUid: senderUid,
+          senderAvatar: senderAvatar,
+          createdAt: serverTimestamp(),
+          isEdited: false
+        });
+        chatInput.value = "";
+      } catch (err) {
+        console.error("Fehler beim Senden:", err);
+      }
+    }
+
+    btnSendChat.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
