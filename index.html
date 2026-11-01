@@ -167,7 +167,7 @@
       font-weight: bold;
     }
 
-    /* WHATSAPP-STYLE CHAT STYLING */
+    /* CHAT STYLING */
     .chat-box {
       height: 320px;
       overflow-y: auto;
@@ -409,7 +409,7 @@
   <nav>
     <button class="nav-btn active" onclick="switchTab('schichten', this)">Schichten</button>
     <button class="nav-btn" onclick="switchTab('zaehlungen', this)">Zählungen</button>
-    <button class="nav-btn" onclick="switchTab('chat', this)" id="navChatBtn">Chat</button>
+    <button class="nav-btn" onclick="switchTab('chat', this)">Chat</button>
     <button class="nav-btn" onclick="switchTab('profil', this)">Profil</button>
   </nav>
 
@@ -423,4 +423,28 @@
       apiKey: "AIzaSyAvL5KTwN7h-fkc-tlHD7hKQRDzjRkS1Oo",
       authDomain: "novago-datnet.firebaseapp.com",
       projectId: "novago-datnet",
-      storageBucket: "novago-datnet.firebasest
+      storageBucket: "novago-datnet.firebasestorage.app",
+      messagingSenderId: "1083028285400",
+      appId: "1:1083028285400:web:549b2727dbbae306b174ad",
+      measurementId: "G-GHCKHM3KC5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let lastMessageCount = 0;
+
+    const authStatus = document.getElementById("authStatus");
+    const chatBox = document.getElementById("chatBox");
+    const chatInput = document.getElementById("chatInput");
+    const btnSendChat = document.getElementById("btnSendChat");
+    const loggedOutSection = document.getElementById("loggedOutSection");
+    const loggedInSection = document.getElementById("loggedInSection");
+    const profileUserEmail = document.getElementById("profileUserEmail");
+    const profileName = document.getElementById("profileName");
+    const profileAvatarUrl = document.getElementById("profileAvatarUrl");
+    const profilePreviewImg = document.getElementById("profilePreviewImg");
+
+    function playNotificationSound() {
