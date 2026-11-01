@@ -188,6 +188,22 @@
       font-size: 0.875rem;
       position: relative;
       word-wrap: break-word;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .chat-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .chat-bubble-content {
+      flex: 1;
     }
 
     .chat-msg.me {
@@ -207,7 +223,7 @@
       font-weight: 700;
       font-size: 0.7rem;
       margin-bottom: 0.2rem;
-      opacity: 0.8;
+      opacity: 0.9;
     }
 
     .chat-msg .meta {
@@ -250,6 +266,21 @@
       width: auto;
       padding: 0.625rem 1.25rem;
       margin-bottom: 0;
+    }
+
+    .profile-preview {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .profile-avatar-lg {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-color);
     }
 
     nav {
@@ -327,25 +358,50 @@
       </div>
     </div>
 
-    <!-- TAB 4: Owner / Einstellungen -->
-    <div id="tab-owner" class="tab-content">
+    <!-- TAB 4: Profil & Einstellungen -->
+    <div id="tab-profil" class="tab-content">
       <div class="card">
-        <h2>Owner-Menü & Einstellungen</h2>
+        <h2>Profil & Einstellungen</h2>
+        
+        <div id="loggedOutSection">
+          <label>Benutzerkonto (Firebase)</label>
+          <input type="email" id="authEmail" placeholder="E-Mail-Adresse">
+          <input type="password" id="authPassword" placeholder="Passwort">
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="btnLogin">Anmelden</button>
+            <button id="btnRegister" style="background: var(--border-color);">Registrieren</button>
+          </div>
+        </div>
+
+        <div id="loggedInSection" style="display: none;">
+          <div class="profile-preview">
+            <img id="profilePreviewImg" class="profile-avatar-lg" src="https://via.placeholder.com/60" alt="Avatar">
+            <div>
+              <p id="profileUserEmail" style="font-weight: 600; font-size: 0.875rem;"></p>
+              <p style="font-size: 0.75rem; color: var(--accent-color);">Angemeldet</p>
+            </div>
+          </div>
+
+          <label for="profileName">Anzeigename im Chat</label>
+          <input type="text" id="profileName" placeholder="Dein Name (z.B. Max Mustermann)">
+
+          <label for="profileAvatarUrl">Profilbild URL (Link zu einem Bild)</label>
+          <input type="text" id="profileAvatarUrl" placeholder="https://beispiel.de/bild.jpg">
+
+          <button id="btnSaveProfile">Profil speichern</button>
+          <button id="btnLogout" style="background: #dc2626; margin-top: 0.5rem;">Abmelden</button>
+        </div>
+
+        <p id="authStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.75rem;"></p>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;">
+
         <label for="themeSelect">Design-Theme wählen</label>
         <select id="themeSelect">
           <option value="dark">Standard Clean (Dark)</option>
           <option value="light">Standard Clean (Light)</option>
           <option value="neon">Neon Glow</option>
         </select>
-
-        <h3 style="font-size: 0.875rem; margin: 1rem 0 0.5rem;">Benutzerkonto (Firebase)</h3>
-        <input type="email" id="authEmail" placeholder="E-Mail-Adresse">
-        <input type="password" id="authPassword" placeholder="Passwort">
-        <div style="display: flex; gap: 0.5rem;">
-          <button id="btnLogin">Anmelden</button>
-          <button id="btnRegister" style="background: var(--border-color);">Registrieren</button>
-        </div>
-        <p id="authStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
       </div>
     </div>
   </main>
@@ -353,177 +409,18 @@
   <nav>
     <button class="nav-btn active" onclick="switchTab('schichten', this)">Schichten</button>
     <button class="nav-btn" onclick="switchTab('zaehlungen', this)">Zählungen</button>
-    <button class="nav-btn" onclick="switchTab('chat', this)">Chat</button>
-    <button class="nav-btn" onclick="switchTab('owner', this)">Owner</button>
+    <button class="nav-btn" onclick="switchTab('chat', this)" id="navChatBtn">Chat</button>
+    <button class="nav-btn" onclick="switchTab('profil', this)">Profil</button>
   </nav>
 
   <!-- Firebase SDK Modules & App Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAvL5KTwN7h-fkc-tlHD7hKQRDzjRkS1Oo",
       authDomain: "novago-datnet.firebaseapp.com",
       projectId: "novago-datnet",
-      storageBucket: "novago-datnet.firebasestorage.app",
-      messagingSenderId: "1083028285400",
-      appId: "1:1083028285400:web:549b2727dbbae306b174ad",
-      measurementId: "G-GHCKHM3KC5"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let currentUser = null;
-
-    const authStatus = document.getElementById("authStatus");
-    const chatBox = document.getElementById("chatBox");
-    const chatInput = document.getElementById("chatInput");
-    const btnSendChat = document.getElementById("btnSendChat");
-
-    document.getElementById("themeSelect").addEventListener("change", (e) => {
-      document.body.setAttribute("data-theme", e.target.value);
-    });
-
-    document.getElementById("btnLogin").addEventListener("click", async () => {
-      const email = document.getElementById("authEmail").value;
-      const pass = document.getElementById("authPassword").value;
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        authStatus.textContent = "Erfolgreich angemeldet!";
-      } catch (err) {
-        authStatus.textContent = "Fehler: " + err.message;
-      }
-    });
-
-    document.getElementById("btnRegister").addEventListener("click", async () => {
-      const email = document.getElementById("authEmail").value;
-      const pass = document.getElementById("authPassword").value;
-      try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        authStatus.textContent = "Konto erfolgreich erstellt!";
-      } catch (err) {
-        authStatus.textContent = "Fehler: " + err.message;
-      }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      currentUser = user;
-      if (user) {
-        authStatus.textContent = `Angemeldet als: ${user.email}`;
-      } else {
-        authStatus.textContent = "Nicht angemeldet";
-      }
-    });
-
-    // WHATSAPP CHAT ENGINE
-    const chatRef = collection(db, "chat_messages");
-    const chatQuery = query(chatRef, orderBy("createdAt", "asc"));
-
-    onSnapshot(chatQuery, (snapshot) => {
-      chatBox.innerHTML = "";
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const msgId = docSnap.id;
-        const isMe = currentUser && currentUser.uid === data.senderUid;
-
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `chat-msg ${isMe ? 'me' : 'other'}`;
-
-        const senderName = data.sender || "Anonym";
-        const timeStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
-        const editedTag = data.isEdited ? " (bearbeitet)" : "";
-
-        let actionsHtml = "";
-        if (isMe) {
-          actionsHtml = `
-            <div class="actions">
-              <button class="action-btn" onclick="editMessage('${msgId}', '${data.text.replace(/'/g, "\\'")}')">Bearbeiten</button>
-              <button class="action-btn" onclick="deleteMessage('${msgId}')">Löschen</button>
-            </div>
-          `;
-        }
-
-        msgDiv.innerHTML = `
-          <div class="sender">${senderName}</div>
-          <div>${data.text}</div>
-          <div class="meta">${timeStr}${editedTag}</div>
-          ${actionsHtml}
-        `;
-
-        chatBox.appendChild(msgDiv);
-      });
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-
-    async function sendMessage() {
-      const text = chatInput.value.trim();
-      if (!text) return;
-
-      const senderName = currentUser ? currentUser.email : "Fahrer (Anonym)";
-      const senderUid = currentUser ? currentUser.uid : "anon";
-
-      try {
-        await addDoc(chatRef, {
-          text: text,
-          sender: senderName,
-          senderUid: senderUid,
-          createdAt: serverTimestamp(),
-          isEdited: false
-        });
-        chatInput.value = "";
-      } catch (err) {
-        console.error("Fehler beim Senden:", err);
-      }
-    }
-
-    window.editMessage = async (msgId, currentText) => {
-      const newText = prompt("Nachricht bearbeiten:", currentText);
-      if (newText !== null && newText.trim() !== "" && newText !== currentText) {
-        try {
-          await updateDoc(doc(db, "chat_messages", msgId), {
-            text: newText.trim(),
-            isEdited: true
-          });
-        } catch (err) {
-          alert("Fehler beim Bearbeiten: " + err.message);
-        }
-      }
-    };
-
-    window.deleteMessage = async (msgId) => {
-      if (confirm("Möchtest du diese Nachricht wirklich löschen?")) {
-        try {
-          await deleteDoc(doc(db, "chat_messages", msgId));
-        } catch (err) {
-          alert("Fehler beim Löschen: " + err.message);
-        }
-      }
-    };
-
-    btnSendChat.addEventListener("click", sendMessage);
-    chatInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") sendMessage();
-    });
-  </script>
-
-  <!-- Globale Navigation Script -->
-  <script>
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      
-      const target = document.getElementById('tab-' + tabId);
-      if (target) {
-        target.classList.add('active');
-      }
-      if (btn) {
-        btn.classList.add('active');
-      }
-    }
-  </script>
-</body>
-</html>
+      storageBucket: "novago-datnet.firebasest
