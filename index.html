@@ -1,1146 +1,741 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="midnight" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NovaGO DatNet</title>
+  <title>NovaGO DatNet – Full PWA</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Sora & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Sora', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            transit: 'hsl(var(--transit-hsl) / <alpha-value>)',
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    /* 10 MODERNE APPLE / FLUGMODUS THEMES */
+    /* 10 Apple & Flugmodus Themes */
     :root, [data-theme="midnight"] {
-      --bg-color: #0b0f19;
-      --card-bg: #141b2d;
-      --accent-color: #0ea5e9;
-      --accent-hover: #0284c7;
-      --text-color: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #1e293b;
-      --chat-me: #059669;
-      --chat-other: #1e293b;
+      --bg-color: #0b0f19; --card-bg: #141b2d; --accent: #0ea5e9; --accent-hover: #0284c7;
+      --text: #f8fafc; --muted: #94a3b8; --border: #1e293b; --transit-hsl: 204 100% 32%;
     }
-
     [data-theme="obsidian"] {
-      --bg-color: #000000;
-      --card-bg: #121212;
-      --accent-color: #38bdf8;
-      --accent-hover: #0284c7;
-      --text-color: #ffffff;
-      --text-muted: #a1a1aa;
-      --border-color: #27272a;
-      --chat-me: #047857;
-      --chat-other: #27272a;
+      --bg-color: #000000; --card-bg: #121212; --accent: #38bdf8; --accent-hover: #0284c7;
+      --text: #ffffff; --muted: #a1a1aa; --border: #27272a; --transit-hsl: 199 89% 48%;
     }
-
     [data-theme="nordic"] {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent-color: #38bdf8;
-      --accent-hover: #0ea5e9;
-      --text-color: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border-color: #334155;
-      --chat-me: #0d9488;
-      --chat-other: #334155;
+      --bg-color: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --accent-hover: #0ea5e9;
+      --text: #f1f5f9; --muted: #94a3b8; --border: #334155; --transit-hsl: 199 89% 48%;
     }
-
     [data-theme="emerald"] {
-      --bg-color: #061a14;
-      --card-bg: #0d2e23;
-      --accent-color: #10b981;
-      --accent-hover: #059669;
-      --text-color: #ecfdf5;
-      --text-muted: #6ee7b7;
-      --border-color: #134e3b;
-      --chat-me: #047857;
-      --chat-other: #134e3b;
+      --bg-color: #061a14; --card-bg: #0d2e23; --accent: #10b981; --accent-hover: #059669;
+      --text: #ecfdf5; --muted: #6ee7b7; --border: #134e3b; --transit-hsl: 160 84% 39%;
     }
-
     [data-theme="cyberpunk"] {
-      --bg-color: #05050a;
-      --card-bg: #0f0e1d;
-      --accent-color: #ff007f;
-      --accent-hover: #d9006b;
-      --text-color: #ffff00;
-      --text-muted: #00f0ff;
-      --border-color: #ff007f;
-      --chat-me: #ff007f;
-      --chat-other: #1f1d36;
+      --bg-color: #05050a; --card-bg: #0f0e1d; --accent: #ff007f; --accent-hover: #d9006b;
+      --text: #ffff00; --muted: #00f0ff; --border: #ff007f; --transit-hsl: 330 100% 50%;
     }
-
     [data-theme="titanium"] {
-      --bg-color: #18181b;
-      --card-bg: #27272a;
-      --accent-color: #e4e4e7;
-      --accent-hover: #ffffff;
-      --text-color: #fafafa;
-      --text-muted: #a1a1aa;
-      --border-color: #3f3f46;
-      --chat-me: #52525b;
-      --chat-other: #3f3f46;
+      --bg-color: #18181b; --card-bg: #27272a; --accent: #e4e4e7; --accent-hover: #ffffff;
+      --text: #fafafa; --muted: #a1a1aa; --border: #3f3f46; --transit-hsl: 240 5% 65%;
     }
-
     [data-theme="sunset"] {
-      --bg-color: #180c10;
-      --card-bg: #29151c;
-      --accent-color: #f43f5e;
-      --accent-hover: #e11d48;
-      --text-color: #fff1f2;
-      --text-muted: #fda4af;
-      --border-color: #4c1d29;
-      --chat-me: #be123c;
-      --chat-other: #4c1d29;
+      --bg-color: #180c10; --card-bg: #29151c; --accent: #f43f5e; --accent-hover: #e11d48;
+      --text: #fff1f2; --muted: #fda4af; --border: #4c1d29; --transit-hsl: 343 89% 60%;
     }
-
     [data-theme="ocean"] {
-      --bg-color: #021420;
-      --card-bg: #072233;
-      --accent-color: #00d2ff;
-      --accent-hover: #00a0c6;
-      --text-color: #e0f7fa;
-      --text-muted: #80deea;
-      --border-color: #0f3854;
-      --chat-me: #00838f;
-      --chat-other: #0f3854;
+      --bg-color: #021420; --card-bg: #072233; --accent: #00d2ff; --accent-hover: #00a0c6;
+      --text: #e0f7fa; --muted: #80deea; --border: #0f3854; --transit-hsl: 191 100% 50%;
     }
-
     [data-theme="purple"] {
-      --bg-color: #0e0b16;
-      --card-bg: #1c152e;
-      --accent-color: #a855f7;
-      --accent-hover: #9333ea;
-      --text-color: #faf5ff;
-      --text-muted: #d8b4fe;
-      --border-color: #2e234d;
-      --chat-me: #7e22ce;
-      --chat-other: #2e234d;
+      --bg-color: #0e0b16; --card-bg: #1c152e; --accent: #a855f7; --accent-hover: #9333ea;
+      --text: #faf5ff; --muted: #d8b4fe; --border: #2e234d; --transit-hsl: 271 91% 65%;
     }
-
     [data-theme="light"] {
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --accent-color: #0284c7;
-      --accent-hover: #0369a1;
-      --text-color: #0f172a;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
-      --chat-me: #10b981;
-      --chat-other: #e2e8f0;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --bg-color: #f8fafc; --card-bg: #ffffff; --accent: #0284c7; --accent-hover: #0369a1;
+      --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --transit-hsl: 204 100% 32%;
     }
 
     body {
       background-color: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      transition: background-color 0.3s, color 0.3s;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      transition: background-color 0.2s, color 0.2s;
     }
 
-    main {
-      flex: 1;
-      padding: 1.25rem 1rem;
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-      padding-bottom: 6rem;
-    }
+    h1, h2, h3, h4, .font-heading { font-family: 'Sora', sans-serif; }
 
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    /* HEADER */
-    .app-top-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.25rem;
-    }
-
-    .app-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      font-size: 0.9rem;
-    }
-
-    .app-brand span {
-      background: rgba(255,255,255,0.08);
-      padding: 0.3rem 0.5rem;
-      border-radius: 0.35rem;
-    }
-
-    .header-link {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .header-link:hover {
-      color: var(--text-color);
-    }
-
-    /* CLOCK & GREETING */
-    .hero-time-section {
-      margin-bottom: 1.25rem;
-    }
-
-    .greeting-text {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      margin-bottom: 0.1rem;
-    }
-
-    .hero-clock {
-      font-size: 3.5rem;
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    .hero-date {
-      font-size: 1rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-
-    /* CARDS */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
+    .app-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 1rem;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
-    .card h2 {
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem;
-    }
-
-    /* WETTER */
-    .weather-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .weather-info .temp {
-      font-size: 2rem;
-      font-weight: 700;
-    }
-
-    .weather-info .desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 0.1rem;
-    }
-
-    .weather-icon {
-      font-size: 2.5rem;
-    }
-
-    .weather-actions {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-    }
-
-    .weather-actions input {
-      margin-bottom: 0;
-      padding: 0.5rem;
-      font-size: 0.8rem;
-    }
-
-    .weather-actions button {
-      margin-bottom: 0;
-      padding: 0.5rem 1rem;
-      font-size: 0.8rem;
-      width: auto;
-    }
-
-    /* NEWS TICKER */
-    .news-item {
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-      padding: 0.6rem 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .news-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .news-badge {
-      background: rgba(14, 165, 233, 0.15);
-      color: var(--accent-color);
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 0.2rem 0.5rem;
-      border-radius: 0.25rem;
-      white-space: nowrap;
-      margin-top: 0.1rem;
-    }
-
-    .news-content .title {
-      font-size: 0.85rem;
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
       font-weight: 600;
+      transition: opacity 0.2s;
     }
+    .btn-primary:hover { opacity: 0.9; }
 
-    .news-content .sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 0.1rem;
-    }
-
-    /* FORM & INPUTS */
-    label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 0.35rem;
-    }
-
-    select, input, button {
+    .input-field {
       width: 100%;
-      padding: 0.65rem;
+      height: 2.75rem;
+      padding: 0 0.75rem;
       border-radius: 0.5rem;
-      border: 1px solid var(--border-color);
-      background: var(--bg-color);
-      color: var(--text-color);
+      border: 1px solid var(--border);
+      background-color: var(--bg-color);
+      color: var(--text);
       font-size: 0.875rem;
-      margin-bottom: 0.75rem;
       outline: none;
     }
-
-    button {
-      background: var(--accent-color);
-      color: #fff;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
+    .input-field:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
     }
 
-    button:hover {
-      background: var(--accent-hover);
-    }
-
-    /* COUNTER */
-    .counter-controls {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .counter-btn {
-      font-size: 1.5rem;
-      font-weight: bold;
-      width: 3.5rem;
-      height: 3.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .counter-display {
-      flex: 1;
-      text-align: center;
-      font-size: 2.2rem;
-      font-weight: bold;
-    }
-
-    /* CHAT */
-    .chat-selector {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .chat-selector button {
-      flex: 1;
-      padding: 0.4rem;
-      font-size: 0.75rem;
-      margin-bottom: 0;
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-    }
-
-    .chat-selector button.active {
-      background: var(--accent-color);
-      color: #fff;
-      border-color: var(--accent-color);
-    }
-
-    .chat-box {
-      height: 300px;
-      overflow-y: auto;
-      border: 1px solid var(--border-color);
-      background: rgba(0,0,0,0.15);
-      border-radius: 0.5rem;
-      padding: 0.75rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .chat-msg {
-      max-width: 85%;
-      padding: 0.5rem 0.75rem;
-      border-radius: 0.75rem;
-      font-size: 0.85rem;
-      position: relative;
-      word-wrap: break-word;
-      display: flex;
-      gap: 0.5rem;
-      align-items: flex-start;
-    }
-
-    .chat-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: var(--border-color);
-      flex-shrink: 0;
-    }
-
-    .chat-bubble-content {
-      flex: 1;
-    }
-
-    .chat-msg.me {
-      align-self: flex-end;
-      background: var(--chat-me);
-      color: #ffffff;
-      border-bottom-right-radius: 0.125rem;
-    }
-
-    .chat-msg.other {
-      align-self: flex-start;
-      background: var(--chat-other);
-      border-bottom-left-radius: 0.125rem;
-    }
-
-    .chat-msg .sender {
-      font-weight: 700;
-      font-size: 0.68rem;
-      margin-bottom: 0.15rem;
-      opacity: 0.9;
-    }
-
-    .chat-msg .meta {
-      font-size: 0.6rem;
-      opacity: 0.7;
-      text-align: right;
-      margin-top: 0.2rem;
-    }
-
-    .chat-input-container {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .chat-input-container input {
-      margin-bottom: 0;
-    }
-
-    .chat-input-container button {
-      width: auto;
-      padding: 0.6rem 1rem;
-      margin-bottom: 0;
-    }
-
-    /* TEAM */
-    .user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .user-card {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      background: rgba(0,0,0,0.15);
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-    }
-
-    .user-card img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .user-card .info {
-      flex: 1;
-    }
-
-    .user-card .info .name {
-      font-weight: 600;
-      font-size: 0.875rem;
-    }
-
-    .user-card .info .email {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    /* PROFILE */
-    .profile-preview {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .profile-avatar-lg {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent-color);
-    }
-
-    /* 7-BUTTON BOTTOM NAVIGATION BAR */
-    nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--card-bg);
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-around;
-      padding: 0.4rem 0.2rem;
-      z-index: 100;
-    }
-
-    nav button {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.65rem;
-      font-weight: 500;
-      padding: 0.3rem 0.1rem;
-      margin: 0;
-      width: auto;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.15rem;
-      cursor: pointer;
-    }
-
-    nav button span.nav-icon {
-      font-size: 1.1rem;
-    }
-
-    nav button.active {
-      color: var(--accent-color);
-      font-weight: 700;
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
   </style>
 </head>
-<body data-theme="midnight">
+<body class="min-h-screen flex flex-col antialiased pb-24 select-none">
 
-  <main>
-    <!-- TAB 1: HOME (DASHBOARD) -->
-    <div id="tab-home" class="tab-content active">
-      <div class="app-top-header">
-        <div class="app-brand">
-          <span>🚍</span> NOVAGO DATNET
-        </div>
-        <a class="header-link" onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schicht-Planer</a>
+  <!-- APP TOP HEADER -->
+  <header class="app-card rounded-none border-x-0 border-t-0 sticky top-0 z-40 px-4 py-3 flex items-center justify-between backdrop-blur-md bg-opacity-80">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">
+        <i data-lucide="train" class="w-5 h-5"></i>
       </div>
-
-      <div class="hero-time-section">
-        <div class="greeting-text" id="greetingText">Willkommen</div>
-        <div class="hero-clock" id="heroClock">00:00</div>
-        <div class="hero-date" id="heroDate">Sonntag, 1. November</div>
+      <div>
+        <h1 class="text-sm font-bold tracking-tight leading-none">NovaGO DatNet</h1>
+        <p class="text-[10px] text-[var(--muted)] leading-tight mt-0.5">Transit Operations Suite</p>
       </div>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <span id="userStatusBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-800 border border-[var(--border)] font-medium text-[var(--muted)] flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="userBadgeName">Gast</span>
+      </span>
 
-      <!-- WETTER WIDGET -->
-      <div class="card">
-        <h2>Wetter vor Ort</h2>
-        <div class="weather-row">
-          <div class="weather-info">
-            <div class="temp" id="weatherTemp">8 °C</div>
-            <div class="desc" id="weatherDesc">Plauen · Leicht bewölkt · Wind 5 km/h</div>
+      <!-- Theme Switcher -->
+      <select id="themeSelect" class="h-8 rounded-lg border border-[var(--border)] bg-[var(--bg-color)] px-2 text-xs outline-none cursor-pointer">
+        <option value="midnight">Midnight</option>
+        <option value="obsidian">Obsidian</option>
+        <option value="nordic">Nordic</option>
+        <option value="emerald">Emerald</option>
+        <option value="cyberpunk">Cyberpunk</option>
+        <option value="titanium">Titanium</option>
+        <option value="sunset">Sunset</option>
+        <option value="ocean">Ocean</option>
+        <option value="purple">Purple</option>
+        <option value="light">Light</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-2xl w-full mx-auto p-4 space-y-4">
+
+    <!-- 1. TAB: HOME / DIENSTPLAN -->
+    <div id="tab-home" class="tab-content active space-y-4">
+      <div class="app-card p-5 relative overflow-hidden">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm font-medium text-[var(--muted)]" id="greetingLabel">Guten Tag</p>
+            <h2 class="text-4xl font-bold tracking-tight mt-1" id="clockText">00:00:00</h2>
+            <p class="text-xs text-[var(--muted)] mt-1" id="dateText">Montag, 2. November 2026</p>
           </div>
-          <div class="weather-icon">⛅</div>
-        </div>
-        <div class="weather-actions">
-          <input type="text" id="locationInput" value="Plauen" placeholder="Ort eingeben">
-          <button id="btnUpdateWeather">Aktualisieren</button>
+          <div class="p-3 rounded-2xl bg-sky-500/10 text-sky-400">
+            <i data-lucide="cloud-sun" class="w-8 h-8"></i>
+          </div>
         </div>
       </div>
 
-      <!-- BENACHRICHTIGUNGEN & NEWSLEISTE -->
-      <div class="card">
-        <h2>Mitteilungen & News</h2>
-        <div class="news-item">
-          <span class="news-badge">SYSTEM</span>
-          <div class="news-content">
-            <div class="title">NovaGO DatNet v2.5 Online</div>
-            <div class="sub">Dashboard, 10 Themes & Fahrgastzähler aktiv.</div>
-          </div>
+      <!-- HEUTIGE SCHICHT -->
+      <div class="app-card p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--muted)] flex items-center gap-2">
+            <i data-lucide="clock" class="w-4 h-4 text-sky-400"></i> Aktuelle Schicht
+          </h3>
+          <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Aktiv</span>
         </div>
-        <div class="news-item">
-          <span class="news-badge">INFO</span>
-          <div class="news-content">
-            <div class="title">Regulärer Fahrbetrieb</div>
-            <div class="sub">Alle Schichten und Verbindungen planmäßig.</div>
+        <div class="p-3 rounded-xl bg-[var(--bg-color)] border border-[var(--border)] space-y-2">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-base">RB 5 · Dienst 402</p>
+              <p class="text-xs text-[var(--muted)]">Zwickau (Sachs) Hbf → Mehltheuer</p>
+            </div>
+            <span class="text-xs font-mono font-bold text-sky-400 bg-sky-500/10 px-2 py-1 rounded">05:42 – 14:15</span>
+          </div>
+          <div class="flex items-center gap-4 text-xs text-[var(--muted)] pt-2 border-t border-[var(--border)]">
+            <span class="flex items-center gap-1"><i data-lucide="train" class="w-3.5 h-3.5"></i> VT 650</span>
+            <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Plauen (Vogtl) ob Bf</span>
           </div>
         </div>
       </div>
 
       <!-- SCHNELLZUGRIFFE -->
-      <div class="card">
-        <h2>Schnellzugriffe</h2>
-        <div style="display: flex; gap: 0.5rem;">
-          <button onclick="switchTab('kalender', document.getElementById('btnNavKalender'))">Schichten</button>
-          <button onclick="switchTab('chat', document.getElementById('btnNavChat'))" style="background: var(--border-color);">Team-Chat</button>
-          <button onclick="switchTab('statistik', document.getElementById('btnNavStatistik'))" style="background: var(--border-color);">Zähler</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 2: TEAM -->
-    <div id="tab-team" class="tab-content">
-      <div class="card">
-        <h2>Mitarbeiter & Kontakte</h2>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Klicke auf einen Mitarbeiter, um einen privaten Chat zu starten.</p>
-        <div class="user-list" id="userList">
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Lade Teammitglieder...</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 3: KALENDER / SCHICHTEN -->
-    <div id="tab-kalender" class="tab-content">
-      <div class="card">
-        <h2>Schichtverwaltung & Kalender</h2>
-        <label for="shiftSelect">Aktive Schicht wählen</label>
-        <select id="shiftSelect">
-          <option>Frühschicht (06:00 - 14:00)</option>
-          <option>Spätschicht (14:00 - 22:00)</option>
-          <option>Nachtschicht (22:00 - 06:00)</option>
-          <option>Sonderschicht / SEV</option>
-        </select>
-        <button id="btnStartShift">Schicht starten</button>
-        <p id="shiftStatusInfo" style="font-size: 0.8rem; color: var(--accent-color); margin-top: 0.5rem;"></p>
-      </div>
-    </div>
-
-    <!-- TAB 4: TECHNIK -->
-    <div id="tab-technik" class="tab-content">
-      <div class="card">
-        <h2>Technik & Geräte</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Übersicht der aktiven Ausrüstung und Gerätestatus.</p>
-        <ul style="margin-left: 1.25rem; font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-color);">
-          <li>Funkgerät Einheit A - Bereit</li>
-          <li>Zählgerät SEV 02 - Aktiv</li>
-          <li>DatNet Router #4 - Verbunden</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- TAB 5: STATISTIK & FAHRGASTZÄHLER -->
-    <div id="tab-statistik" class="tab-content">
-      <div class="card">
-        <h2>Fahrgastzählung (SEV) & Statistik</h2>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Erfasse hier ein- und aussteigende Fahrgäste während deines Schichtbetriebs.</p>
-        
-        <div class="counter-controls" style="margin: 1.5rem 0;">
-          <button class="counter-btn" id="btnMinus">-</button>
-          <span class="counter-display" id="countDisplay">0</span>
-          <button class="counter-btn" id="btnPlus">+</button>
-        </div>
-        
-        <button id="btnResetCount" style="background: #dc2626;">Zähler zurücksetzen</button>
-      </div>
-    </div>
-
-    <!-- TAB 6: CHAT -->
-    <div id="tab-chat" class="tab-content">
-      <div class="card">
-        <h2 id="chatTitle">Team-Chat (Öffentlich)</h2>
-        
-        <div class="chat-selector">
-          <button id="btnChatPublic" class="active">Öffentlich</button>
-          <button id="btnChatPrivateSelect">Privat-Chat</button>
-        </div>
-
-        <div class="chat-box" id="chatBox">
-          <p style="color: var(--text-muted); font-size: 0.85rem;">Lade Nachrichten...</p>
-        </div>
-        
-        <div class="chat-input-container">
-          <input type="text" id="chatInput" placeholder="Nachricht schreiben...">
-          <button id="btnSendChat">Senden</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 7: PROFIL & EINSTELLUNGEN -->
-    <div id="tab-profil" class="tab-content">
-      <div class="card">
-        <h2>Profil & Einstellungen</h2>
-        
-        <div id="loggedOutSection">
-          <label>Benutzerkonto (Firebase)</label>
-          <input type="email" id="authEmail" placeholder="E-Mail-Adresse">
-          <input type="password" id="authPassword" placeholder="Passwort">
-          <div style="display: flex; gap: 0.5rem;">
-            <button id="btnLogin">Anmelden</button>
-            <button id="btnRegister" style="background: var(--border-color);">Registrieren</button>
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="switchTab('counting')" class="app-card p-4 text-left hover:border-[var(--accent)] transition-colors group">
+          <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="users" class="w-5 h-5"></i>
           </div>
+          <p class="font-bold text-sm">Fahrgastzählung</p>
+          <p class="text-xs text-[var(--muted)] mt-0.5">Zählung starten oder fortsetzen</p>
+        </button>
+
+        <button onclick="switchTab('disruptions')" class="app-card p-4 text-left hover:border-amber-500 transition-colors group">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          </div>
+          <p class="font-bold text-sm">Störung melden</p>
+          <p class="text-xs text-[var(--muted)] mt-0.5">Schäden & Verzögerungen erfassen</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. TAB: FAHRGASTZÄHLUNG (COUNTING) -->
+    <div id="tab-counting" class="tab-content space-y-4">
+      <div class="app-card p-4 space-y-4">
+        <!-- HEADER & SEV SWITCH -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-bold text-lg">Fahrgastzählung</h2>
+            <p class="text-xs text-[var(--muted)]">Zug 80566 · RB 5</p>
+          </div>
+          <button id="sevToggleBtn" onclick="toggleSev()" class="px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-400 text-xs font-bold flex items-center gap-1.5">
+            <i data-lucide="bus" class="w-3.5 h-3.5"></i> SEV Modus: AUS
+          </button>
         </div>
 
-        <div id="loggedInSection" style="display: none;">
-          <div class="profile-preview">
-            <img id="profilePreviewImg" class="profile-avatar-lg" src="https://via.placeholder.com/60" alt="Avatar">
-            <div>
-              <p id="profileUserEmail" style="font-weight: 600; font-size: 0.875rem;"></p>
-              <p style="font-size: 0.75rem; color: var(--accent-color);">Angemeldet</p>
+        <!-- HALTESTELLEN SELECTOR -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-[var(--muted)]">Aktuelle Haltestelle</label>
+          <select id="stationSelect" class="input-field" onchange="updateStation()">
+            <option value="Zwickau Hbf">Zwickau (Sachs) Hbf</option>
+            <option value="Lichtentanne">Lichtentanne (Sachs)</option>
+            <option value="Steinpleis">Steinpleis</option>
+            <option value="Werdau">Werdau</option>
+            <option value="Neumark">Neumark (Vogtl)</option>
+            <option value="Reichenbach">Reichenbach (Vogtl) ob Bf</option>
+            <option value="Plauen ob Bf" selected>Plauen (Vogtl) ob Bf</option>
+            <option value="Mehltheuer">Mehltheuer</option>
+          </select>
+        </div>
+
+        <!-- MAIN OCCUPANCY COUNTER -->
+        <div class="app-card p-6 text-center bg-gradient-to-b from-sky-500/5 to-transparent border-sky-500/20">
+          <p class="text-xs uppercase tracking-widest text-[var(--muted)] font-semibold">Geschätzte Belegung im Fahrzeug</p>
+          <p class="text-6xl font-bold font-mono tracking-tight my-2 text-sky-400" id="occupancyDisplay">24</p>
+          <p class="text-xs text-[var(--muted)]">Sitzplatzkapazität: 72 · Auslastung: <span id="capacityPercent" class="font-bold text-emerald-400">33%</span></p>
+        </div>
+
+        <!-- BOARDING / ALIGHTING COUNTERS -->
+        <div class="grid grid-cols-2 gap-3">
+          <!-- EINSTEIGER -->
+          <div class="app-card p-4 text-center space-y-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center justify-center gap-1">
+              <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Einsteiger
+            </span>
+            <div class="flex items-center justify-between gap-2">
+              <button onclick="adjustCounter('boarders', -1)" class="w-10 h-10 rounded-xl bg-[var(--bg-color)] border border-[var(--border)] font-bold text-lg">-</button>
+              <span id="boardersVal" class="text-3xl font-mono font-bold">4</span>
+              <button onclick="adjustCounter('boarders', 1)" class="w-10 h-10 rounded-xl btn-primary font-bold text-lg">+</button>
             </div>
           </div>
 
-          <label for="profileName">Anzeigename</label>
-          <input type="text" id="profileName" placeholder="Dein Name">
-
-          <label for="profileAvatarUrl">Profilbild URL</label>
-          <input type="text" id="profileAvatarUrl" placeholder="https://beispiel.de/bild.jpg">
-
-          <button id="btnSaveProfile">Profil speichern</button>
-          <button id="btnLogout" style="background: #dc2626; margin-top: 0.25rem;">Abmelden</button>
+          <!-- AUSSTEIGER -->
+          <div class="app-card p-4 text-center space-y-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-rose-400 flex items-center justify-center gap-1">
+              <i data-lucide="user-minus" class="w-3.5 h-3.5"></i> Aussteiger
+            </span>
+            <div class="flex items-center justify-between gap-2">
+              <button onclick="adjustCounter('alighters', -1)" class="w-10 h-10 rounded-xl bg-[var(--bg-color)] border border-[var(--border)] font-bold text-lg">-</button>
+              <span id="alightersVal" class="text-3xl font-mono font-bold">2</span>
+              <button onclick="adjustCounter('alighters', 1)" class="w-10 h-10 rounded-xl bg-rose-600 text-white font-bold text-lg">+</button>
+            </div>
+          </div>
         </div>
 
-        <p id="authStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
+        <!-- SPECIAL CARGO COUNTERS -->
+        <div class="space-y-2">
+          <label class="text-xs font-medium text-[var(--muted)]">Sondernutzungen & Mitnahme</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+            <div class="app-card p-2.5 space-y-1">
+              <span class="text-[10px] text-[var(--muted)] block">🚲 Fahrräder</span>
+              <div class="flex items-center justify-between">
+                <button onclick="adjustCounter('bikes', -1)" class="px-2 py-0.5 rounded bg-[var(--bg-color)] border border-[var(--border)] text-xs">-</button>
+                <span id="bikesVal" class="font-bold font-mono text-sm">2</span>
+                <button onclick="adjustCounter('bikes', 1)" class="px-2 py-0.5 rounded bg-[var(--border)] text-xs">+</button>
+              </div>
+            </div>
 
-        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;">
+            <div class="app-card p-2.5 space-y-1">
+              <span class="text-[10px] text-[var(--muted)] block">👨‍🦽 Rollstühle</span>
+              <div class="flex items-center justify-between">
+                <button onclick="adjustCounter('wheelchairs', -1)" class="px-2 py-0.5 rounded bg-[var(--bg-color)] border border-[var(--border)] text-xs">-</button>
+                <span id="wheelchairsVal" class="font-bold font-mono text-sm">0</span>
+                <button onclick="adjustCounter('wheelchairs', 1)" class="px-2 py-0.5 rounded bg-[var(--border)] text-xs">+</button>
+              </div>
+            </div>
 
-        <h2>App-Design (10 Modern Styles)</h2>
-        <label for="themeSelect">Design wählen</label>
-        <select id="themeSelect">
-          <option value="midnight">1. Midnight Slate (Standard)</option>
-          <option value="obsidian">2. Apple Obsidian (Schwarz)</option>
-          <option value="nordic">3. Nordic Frost (Klassik Blau)</option>
-          <option value="emerald">4. Emerald Luxury (Grün/Gold)</option>
-          <option value="cyberpunk">5. Cyberpunk Noir (Neon)</option>
-          <option value="titanium">6. Titanium Clean (Metallic)</option>
-          <option value="sunset">7. Sunset Warmth (Rot/Warm)</option>
-          <option value="ocean">8. Deep Ocean (Türkis)</option>
-          <option value="purple">9. Royal Purple (Violett)</option>
-          <option value="light">10. Pure Light Minimal (Hell)</option>
-        </select>
+            <div class="app-card p-2.5 space-y-1">
+              <span class="text-[10px] text-[var(--muted)] block">🛴 E-Scooter</span>
+              <div class="flex items-center justify-between">
+                <button onclick="adjustCounter('scooters', -1)" class="px-2 py-0.5 rounded bg-[var(--bg-color)] border border-[var(--border)] text-xs">-</button>
+                <span id="scootersVal" class="font-bold font-mono text-sm">1</span>
+                <button onclick="adjustCounter('scooters', 1)" class="px-2 py-0.5 rounded bg-[var(--border)] text-xs">+</button>
+              </div>
+            </div>
+
+            <div class="app-card p-2.5 space-y-1">
+              <span class="text-[10px] text-[var(--muted)] block">👶 Kinderwagen</span>
+              <div class="flex items-center justify-between">
+                <button onclick="adjustCounter('strollers', -1)" class="px-2 py-0.5 rounded bg-[var(--bg-color)] border border-[var(--border)] text-xs">-</button>
+                <span id="strollersVal" class="font-bold font-mono text-sm">1</span>
+                <button onclick="adjustCounter('strollers', 1)" class="px-2 py-0.5 rounded bg-[var(--border)] text-xs">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="finishCounting()" class="btn-primary w-full h-11 rounded-xl flex items-center justify-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Zählung für Haltestelle speichern
+        </button>
       </div>
     </div>
+
+    <!-- 3. TAB: TEAM & TEAM-VERWALTUNG -->
+    <div id="tab-team" class="tab-content space-y-4">
+      <div class="app-card p-4 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-bold text-lg">Team & Crew</h2>
+            <p class="text-xs text-[var(--muted)]">Mitglieder, Rollen & Einsatzorte</p>
+          </div>
+          <button onclick="openMemberModal()" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Mitglied anlegen
+          </button>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="flex gap-2">
+          <div class="relative flex-1">
+            <input type="text" id="teamSearchInput" oninput="renderTeam()" placeholder="Name oder Bereich..." class="input-field pl-8 text-xs" />
+            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-3 text-[var(--muted)]"></i>
+          </div>
+          <select id="roleFilterSelect" onchange="renderTeam()" class="input-field w-32 text-xs">
+            <option value="">Alle Rollen</option>
+            <option value="owner">Owner</option>
+            <option value="admin">Admin</option>
+            <option value="teamleiter">Teamleiter</option>
+            <option value="member">Member</option>
+          </select>
+        </div>
+
+        <!-- MEMBER LIST -->
+        <div class="space-y-2" id="teamMemberList">
+          <!-- Dynamisch befüllt -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. TAB: FAHRTENARCHIV (TRIPS) -->
+    <div id="tab-trips" class="tab-content space-y-4">
+      <div class="app-card p-4 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-bold text-lg">Fahrten-Archiv</h2>
+            <p class="text-xs text-[var(--muted)]">Geplante & Erledigte Zähleinsätze</p>
+          </div>
+          <button onclick="alert('Neue Fahrt anlegen')" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Neue Fahrt
+          </button>
+        </div>
+
+        <div class="space-y-2" id="tripsList">
+          <!-- Dynamisch befüllt -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. TAB: STÖRUNGSMANAGEMENT (DISRUPTIONS) -->
+    <div id="tab-disruptions" class="tab-content space-y-4">
+      <div class="app-card p-4 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-bold text-lg">Störungsmanagement</h2>
+            <p class="text-xs text-[var(--muted)]">Fahrzeugschäden, Verzögerungen & Protokolle</p>
+          </div>
+          <button onclick="openDisruptionModal()" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 hover:bg-rose-700 flex items-center gap-1">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Neue Meldung
+          </button>
+        </div>
+
+        <div class="space-y-2" id="disruptionsList">
+          <!-- Dynamisch befüllt -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. TAB: OWNER PANEL -->
+    <div id="tab-owner" class="tab-content space-y-4">
+      <div class="app-card p-4 space-y-4 border-amber-500/30 bg-amber-500/5">
+        <div class="flex items-center gap-2 text-amber-400">
+          <i data-lucide="shield-alert" class="w-5 h-5"></i>
+          <h2 class="font-bold text-lg">Owner & Administration</h2>
+        </div>
+        <p class="text-xs text-[var(--muted)]">Systemweite Zugriffsverwaltung, PIN-Zurücksetzungen und globale App-Sperren.</p>
+
+        <!-- PIN RESET ANFRAGEN -->
+        <div class="space-y-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Ausstehende PIN-Resets</h3>
+          <div class="space-y-2" id="pinResetRequestsList">
+            <!-- Dynamisch befüllt -->
+          </div>
+        </div>
+
+        <!-- GLOBAL LOCKS -->
+        <div class="space-y-2 pt-2 border-t border-[var(--border)]">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">App-Sperren</h3>
+          <div class="p-3 rounded-xl bg-[var(--card-bg)] border border-[var(--border)] flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold">Notfall-Sperre Zählmodul</p>
+              <p class="text-xs text-[var(--muted)]">Inaktiv · Alle Mitarbeiter zugelassen</p>
+            </div>
+            <button onclick="alert('Sperre umschalten')" class="px-3 py-1 rounded bg-[var(--bg-color)] border border-[var(--border)] text-xs font-medium">Umschalten</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. TAB: PROFIL & AUTHENTIFIZIERUNG -->
+    <div id="tab-profil" class="tab-content space-y-4">
+      <div class="app-card p-4 space-y-4">
+        <h2 class="font-bold text-lg">Authentifizierung & Profil</h2>
+        
+        <div id="authForm" class="space-y-3">
+          <div>
+            <label class="text-xs text-[var(--muted)] mb-1 block">E-Mail-Adresse</label>
+            <input type="email" id="authEmail" placeholder="name@laenderbahn.de" class="input-field" />
+          </div>
+          <div>
+            <label class="text-xs text-[var(--muted)] mb-1 block">Passwort / Sperr-PIN</label>
+            <input type="password" id="authPassword" placeholder="••••••••" class="input-field" />
+          </div>
+          <button onclick="handleLogin()" class="btn-primary w-full h-11 rounded-xl">Anmelden</button>
+          <button onclick="handlePinResetRequest()" class="w-full text-xs text-[var(--accent)] hover:underline text-center block">PIN vergessen?</button>
+        </div>
+
+        <div id="userProfile" class="hidden space-y-3">
+          <div class="p-3 rounded-xl bg-[var(--bg-color)] border border-[var(--border)] flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-sky-500 text-white font-bold flex items-center justify-center" id="profileInitials">JD</div>
+            <div>
+              <p class="font-bold text-sm" id="profileName">Joshua (Owner)</p>
+              <p class="text-xs text-[var(--muted)]" id="profileEmail">joshua@laenderbahn.de</p>
+            </div>
+          </div>
+          <button onclick="handleLogout()" class="w-full h-11 rounded-xl bg-rose-600/10 border border-rose-600/30 text-rose-400 font-semibold text-sm">Abmelden</button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- 7-BUTTON BOTTOM NAVIGATION BAR -->
-  <nav>
-    <button class="nav-btn active" id="btnNavHome"><span class="nav-icon">🏠</span>Home</button>
-    <button class="nav-btn" id="btnNavTeam"><span class="nav-icon">👥</span>Team</button>
-    <button class="nav-btn" id="btnNavKalender"><span class="nav-icon">📅</span>Kalender</button>
-    <button class="nav-btn" id="btnNavTechnik"><span class="nav-icon">📷</span>Technik</button>
-    <button class="nav-btn" id="btnNavStatistik"><span class="nav-icon">📊</span>Statistik</button>
-    <button class="nav-btn" id="btnNavChat"><span class="nav-icon">💬</span>Chat</button>
-    <button class="nav-btn" id="btnNavProfil"><span class="nav-icon">👤</span>Profil</button>
+  <nav class="fixed bottom-0 left-0 right-0 app-card rounded-none border-x-0 border-b-0 flex justify-around p-1.5 z-40 backdrop-blur-md bg-opacity-90">
+    <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center gap-0.5 text-[10px] text-[var(--muted)] font-medium p-1 w-full text-center active" data-tab="home">
+      <i data-lucide="home" class="w-4 h-4"></i> Home
+    </button>
+    <button onclick="switchTab('counting')" class="nav-btn flex flex-col items-center gap-0.5 text-[10px] text-[var(--muted)] font-medium p-1 w-full text-center" data-tab="counting">
+      <i data-lucide="calculator" class="w-4 h-4"></i> Zählung
+    </button>
+    <button onclick="switchTab('team')" class="nav-btn flex flex-col items-center gap-0.5 text-[10px] text-[var(--muted)] font-medium p-1 w-full text-center" data-tab="team">
+      <i data-lucide="users" class="w-4 h-4"></i> Team
+    </button>
+    <button onclick="switchTab('trips')" class="nav-btn flex flex-col items-center gap-0.5 text-[10px] text-[var(--muted)] font-medium p-1 w-full text-center" data-tab="trips">
+      <i data-lucide="train" class="w-4 h-4"></i> Fahrten
+    </button>
+    <button onclick="switchTab('disruptions')" class="nav-btn flex flex-col items-center gap-0.5 text-[10px] text-[var(--muted)] font-medium p-1 w-full text-center" data-tab="disruptions">
+      <i data-lucide="alert-triangle" class="w-4 h-4"></i> Störung
+    </button>
+    <button onclick="switchTab('owner')" class="nav-btn flex flex-col items-center gap-0.5 text-[10px] text-[var(--muted)] font-medium p-1 w-full text-center" data-tab="owner">
+      <i data-lucide="shield" class="w-4 h-4"></i> Owner
+    </button>
+    <button onclick="switchTab('profil')" class="nav-btn flex flex-col items-center gap-0.5 text-[10px] text-[var(--muted)] font-medium p-1 w-full text-center" data-tab="profil">
+      <i data-lucide="user" class="w-4 h-4"></i> Profil
+    </button>
   </nav>
 
-  <!-- NAVIGATION & LIVE CLOCK SCRIPT -->
+  <!-- JAVASCRIPT APP STATE & LOGIC -->
   <script>
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      
-      var target = document.getElementById('tab-' + tabId);
-      if (target) {
-        target.classList.add('active');
-      }
+    // INITIALIZE LUCIDE ICONS
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      updateClock();
+      setInterval(updateClock, 1000);
+      renderTeam();
+      renderTrips();
+      renderDisruptions();
+      renderPinResets();
+    });
+
+    // NAVIGATION SYSTEM
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        el.classList.remove('text-[var(--accent)]', 'font-bold');
+        el.classList.add('text-[var(--muted)]');
+      });
+
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
+
+      const btn = document.querySelector(`[data-tab="${tabId}"]`);
       if (btn) {
-        btn.classList.add('active');
+        btn.classList.add('text-[var(--accent)]', 'font-bold');
+        btn.classList.remove('text-[var(--muted)]');
       }
+      window.scrollTo(0, 0);
     }
 
-    document.getElementById('btnNavHome').onclick = function() { switchTab('home', this); };
-    document.getElementById('btnNavTeam').onclick = function() { switchTab('team', this); };
-    document.getElementById('btnNavKalender').onclick = function() { switchTab('kalender', this); };
-    document.getElementById('btnNavTechnik').onclick = function() { switchTab('technik', this); };
-    document.getElementById('btnNavStatistik').onclick = function() { switchTab('statistik', this); };
-    document.getElementById('btnNavChat').onclick = function() { switchTab('chat', this); };
-    document.getElementById('btnNavProfil').onclick = function() { switchTab('profil', this); };
+    // THEME SWITCHER SYSTEM
+    document.getElementById('themeSelect').addEventListener('change', (e) => {
+      document.documentElement.setAttribute('data-theme', e.target.value);
+    });
 
-    // Live Uhrzeit & Dynamische Begrüßung
-    function updateClockAndGreeting() {
+    // LIVE CLOCK & GREETING
+    function updateClock() {
       const now = new Date();
-      const hours = now.getHours();
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('heroClock').textContent = `${hours}:${minutes}`;
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clockText').textContent = `${h}:${m}:${s}`;
 
-      let greet = "Willkommen";
-      if (hours >= 5 && hours < 12) greet = "Guten Morgen";
-      else if (hours >= 12 && hours < 18) greet = "Guten Tag";
-      else if (hours >= 18 && hours < 22) greet = "Guten Abend";
-      else greet = "Gute Nacht";
-
-      const namePart = window.currentUserName ? `, ${window.currentUserName}` : "";
-      document.getElementById('greetingText').textContent = `${greet}${namePart}`;
-
-      const options = { weekday: 'long', day: 'numeric', month: 'long' };
-      document.getElementById('heroDate').textContent = now.toLocaleDateString('de-DE', options);
-    }
-    setInterval(updateClockAndGreeting, 1000);
-    updateClockAndGreeting();
-
-    // Wetter Suche / Update
-    document.getElementById('btnUpdateWeather').onclick = function() {
-      const loc = document.getElementById('locationInput').value;
-      if (loc) {
-        document.getElementById('weatherDesc').textContent = `${loc} · Bedingungen geladen`;
-      }
-    };
-  </script>
-
-  <!-- FIREBASE MODULE & APP LOGIC -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAvL5KTwN7h-fkc-tlHD7hKQRDzjRkS1Oo",
-      authDomain: "novago-datnet.firebaseapp.com",
-      projectId: "novago-datnet",
-      storageBucket: "novago-datnet.firebasestorage.app",
-      messagingSenderId: "1083028285400",
-      appId: "1:1083028285400:web:549b2727dbbae306b174ad",
-      measurementId: "G-GHCKHM3KC5"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let currentUser = null;
-    let activeChatTarget = "public";
-    let activeChatTargetName = "Team-Chat (Öffentlich)";
-    let lastMessageCount = 0;
-
-    const authStatus = document.getElementById("authStatus");
-    const chatBox = document.getElementById("chatBox");
-    const chatInput = document.getElementById("chatInput");
-    const btnSendChat = document.getElementById("btnSendChat");
-    const chatTitle = document.getElementById("chatTitle");
-    const btnChatPublic = document.getElementById("btnChatPublic");
-    const btnChatPrivateSelect = document.getElementById("btnChatPrivateSelect");
-    const userList = document.getElementById("userList");
-
-    const countDisplay = document.getElementById("countDisplay");
-    let currentCount = 0;
-
-    // Notification Sound (Web Audio API)
-    function playNotificationSound() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-      } catch (e) {
-        console.log("Audio precluded");
-      }
+      let greet = "Guten Tag";
+      if (now.getHours() < 12) greet = "Guten Morgen";
+      else if (now.getHours() >= 18) greet = "Guten Abend";
+      document.getElementById('greetingLabel').textContent = greet;
     }
 
-    // ZÄHLER LOGIK (STATISTIK TAB)
-    document.getElementById("btnPlus").addEventListener("click", () => {
-      currentCount++;
-      countDisplay.textContent = currentCount;
-    });
+    // COUNTING SYSTEM STATE
+    let countingState = {
+      isSev: false,
+      boarders: 4,
+      alighters: 2,
+      bikes: 2,
+      wheelchairs: 0,
+      scooters: 1,
+      strollers: 1,
+      baseOccupancy: 22
+    };
 
-    document.getElementById("btnMinus").addEventListener("click", () => {
-      if (currentCount > 0) currentCount--;
-      countDisplay.textContent = currentCount;
-    });
-
-    document.getElementById("btnResetCount").addEventListener("click", () => {
-      currentCount = 0;
-      countDisplay.textContent = "0";
-    });
-
-    // SCHICHT
-    document.getElementById("btnStartShift").addEventListener("click", () => {
-      const shiftVal = document.getElementById("shiftSelect").value;
-      document.getElementById("shiftStatusInfo").textContent = "Aktiv: " + shiftVal;
-      alert("Schicht gestartet: " + shiftVal);
-    });
-
-    // THEME
-    document.getElementById("themeSelect").addEventListener("change", (e) => {
-      document.body.setAttribute("data-theme", e.target.value);
-    });
-
-    // AUTH
-    document.getElementById("btnLogin").addEventListener("click", async () => {
-      const email = document.getElementById("authEmail").value;
-      const pass = document.getElementById("authPassword").value;
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        authStatus.textContent = "Erfolgreich angemeldet!";
-      } catch (err) {
-        authStatus.textContent = "Fehler: " + err.message;
-      }
-    });
-
-    document.getElementById("btnRegister").addEventListener("click", async () => {
-      const email = document.getElementById("authEmail").value;
-      const pass = document.getElementById("authPassword").value;
-      try {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await setDoc(doc(db, "users", res.user.uid), {
-          uid: res.user.uid,
-          email: email,
-          displayName: email.split('@')[0],
-          photoURL: ""
-        });
-        authStatus.textContent = "Konto erstellt!";
-      } catch (err) {
-        authStatus.textContent = "Fehler: " + err.message;
-      }
-    });
-
-    document.getElementById("btnLogout").addEventListener("click", async () => {
-      await signOut(auth);
-      authStatus.textContent = "Abgemeldet.";
-    });
-
-    document.getElementById("btnSaveProfile").addEventListener("click", async () => {
-      if (!auth.currentUser) return;
-      try {
-        const newName = document.getElementById("profileName").value.trim();
-        const newPhoto = document.getElementById("profileAvatarUrl").value.trim();
-        await updateProfile(auth.currentUser, {
-          displayName: newName || null,
-          photoURL: newPhoto || null
-        });
-        await setDoc(doc(db, "users", auth.currentUser.uid), {
-          uid: auth.currentUser.uid,
-          email: auth.currentUser.email,
-          displayName: newName || auth.currentUser.email.split('@')[0],
-          photoURL: newPhoto || ""
-        }, { merge: true });
-
-        authStatus.textContent = "Profil gespeichert!";
-        document.getElementById("profilePreviewImg").src = newPhoto || "https://via.placeholder.com/60";
-        window.currentUserName = newName || auth.currentUser.email.split('@')[0];
-      } catch (err) {
-        authStatus.textContent = "Fehler: " + err.message;
-      }
-    });
-
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      if (user) {
-        authStatus.textContent = `Angemeldet als: ${user.email}`;
-        document.getElementById("loggedOutSection").style.display = "none";
-        document.getElementById("loggedInSection").style.display = "block";
-        document.getElementById("profileUserEmail").textContent = user.email;
-        document.getElementById("profileName").value = user.displayName || "";
-        document.getElementById("profileAvatarUrl").value = user.photoURL || "";
-        if (user.photoURL) document.getElementById("profilePreviewImg").src = user.photoURL;
-
-        window.currentUserName = user.displayName || user.email.split('@')[0];
-
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || user.email.split('@')[0],
-          photoURL: user.photoURL || ""
-        }, { merge: true });
+    function toggleSev() {
+      countingState.isSev = !countingState.isSev;
+      const btn = document.getElementById('sevToggleBtn');
+      if (countingState.isSev) {
+        btn.classList.remove('border-amber-500/40', 'bg-amber-500/10', 'text-amber-400');
+        btn.classList.add('border-red-500', 'bg-red-500', 'text-white');
+        btn.innerHTML = `<i data-lucide="bus" class="w-3.5 h-3.5"></i> SEV Modus: AN`;
       } else {
-        authStatus.textContent = "Nicht angemeldet";
-        document.getElementById("loggedOutSection").style.display = "block";
-        document.getElementById("loggedInSection").style.display = "none";
-        window.currentUserName = "";
+        btn.classList.remove('border-red-500', 'bg-red-500', 'text-white');
+        btn.classList.add('border-amber-500/40', 'bg-amber-500/10', 'text-amber-400');
+        btn.innerHTML = `<i data-lucide="bus" class="w-3.5 h-3.5"></i> SEV Modus: AUS`;
       }
-    });
+      lucide.createIcons();
+    }
 
-    // TEAM LIST
-    onSnapshot(collection(db, "users"), (snapshot) => {
-      userList.innerHTML = "";
-      snapshot.forEach((docSnap) => {
-        const uData = docSnap.data();
-        if (currentUser && uData.uid === currentUser.uid) return;
+    function adjustCounter(field, delta) {
+      countingState[field] = Math.max(0, countingState[field] + delta);
+      document.getElementById(field + 'Val').textContent = countingState[field];
+      
+      const currentOcc = Math.max(0, countingState.baseOccupancy + countingState.boarders - countingState.alighters);
+      document.getElementById('occupancyDisplay').textContent = currentOcc;
+      
+      const pct = Math.round((currentOcc / 72) * 100);
+      document.getElementById('capacityPercent').textContent = pct + '%';
+    }
 
-        const userCard = document.createElement("div");
-        userCard.className = "user-card";
-        const avatar = uData.photoURL || "https://via.placeholder.com/40";
-        const name = uData.displayName || uData.email.split('@')[0];
+    function updateStation() {
+      countingState.boarders = 0;
+      countingState.alighters = 0;
+      document.getElementById('boardersVal').textContent = 0;
+      document.getElementById('alightersVal').textContent = 0;
+    }
 
-        userCard.innerHTML = `
-          <img src="${avatar}" alt="Avatar">
-          <div class="info">
-            <div class="name">${name}</div>
-            <div class="email">${uData.email}</div>
+    function finishCounting() {
+      alert("Zählung für " + document.getElementById('stationSelect').value + " erfolgreich lokal gespeichert!");
+    }
+
+    // TEAM DATA & MANAGEMENT
+    const membersData = [
+      { id: 1, name: "Joshua (Owner)", role: "owner", dept: "Fahrpersonal", email: "joshua@laenderbahn.de", color: "#005ba1" },
+      { id: 2, name: "Sarah Schmidt", role: "admin", dept: "Disposition", email: "sarah@laenderbahn.de", color: "#10b981" },
+      { id: 3, name: "Michael Weber", role: "teamleiter", dept: "SEV-Leitung", email: "michael@laenderbahn.de", color: "#f59e0b" },
+      { id: 4, name: "Christian Kraft", role: "member", dept: "Zählpersonal", email: "christian@laenderbahn.de", color: "#8b5cf6" }
+    ];
+
+    function renderTeam() {
+      const q = document.getElementById('teamSearchInput').value.toLowerCase();
+      const r = document.getElementById('roleFilterSelect').value;
+      const list = document.getElementById('teamMemberList');
+
+      const filtered = membersData.filter(m => {
+        const matchesQ = m.name.toLowerCase().includes(q) || m.dept.toLowerCase().includes(q);
+        const matchesR = !r || m.role === r;
+        return matchesQ && matchesR;
+      });
+
+      list.innerHTML = filtered.map(m => `
+        <div class="p-3 rounded-xl bg-[var(--bg-color)] border border-[var(--border)] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-xs" style="background:${m.color}">
+              ${m.name.slice(0,2).toUpperCase()}
+            </div>
+            <div>
+              <p class="font-bold text-sm">${m.name}</p>
+              <p class="text-xs text-[var(--muted)]">${m.role.toUpperCase()} · ${m.dept}</p>
+            </div>
           </div>
-          <button style="width: auto; padding: 0.4rem 0.8rem; margin: 0; font-size: 0.75rem;">Chatten</button>
-        `;
-
-        userCard.onclick = () => {
-          activeChatTarget = uData.uid;
-          activeChatTargetName = "Privat: " + name;
-          chatTitle.textContent = activeChatTargetName;
-          btnChatPublic.classList.remove("active");
-          btnChatPrivateSelect.classList.add("active");
-          btnChatPrivateSelect.textContent = name;
-          switchTab('chat', document.getElementById('btnNavChat'));
-          loadChatMessages();
-        };
-
-        userList.appendChild(userCard);
-      });
-    });
-
-    // CHAT ENGINE
-    btnChatPublic.onclick = () => {
-      activeChatTarget = "public";
-      activeChatTargetName = "Team-Chat (Öffentlich)";
-      chatTitle.textContent = activeChatTargetName;
-      btnChatPublic.classList.add("active");
-      btnChatPrivateSelect.classList.remove("active");
-      loadChatMessages();
-    };
-
-    let chatUnsubscribe = null;
-
-    function loadChatMessages() {
-      if (chatUnsubscribe) chatUnsubscribe();
-
-      const chatQuery = query(collection(db, "chat_messages"), orderBy("createdAt", "asc"));
-
-      chatUnsubscribe = onSnapshot(chatQuery, (snapshot) => {
-        chatBox.innerHTML = "";
-        let msgCount = 0;
-        snapshot.forEach((docSnap) => {
-          msgCount++;
-          const data = docSnap.data();
-          
-          if (activeChatTarget === "public") {
-            if (data.target && data.target !== "public") return;
-          } else {
-            const isPrivateMatch = (data.senderUid === currentUser?.uid && data.target === activeChatTarget) ||
-                                   (data.senderUid === activeChatTarget && data.target === currentUser?.uid);
-            if (!isPrivateMatch) return;
-          }
-
-          const isMe = currentUser && currentUser.uid === data.senderUid;
-          const msgDiv = document.createElement("div");
-          msgDiv.className = `chat-msg ${isMe ? 'me' : 'other'}`;
-
-          const senderName = data.senderName || "Anonym";
-          const avatarUrl = data.senderAvatar || "https://via.placeholder.com/28";
-          const timeStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
-
-          const avatarImg = document.createElement("img");
-          avatarImg.className = "chat-avatar";
-          avatarImg.src = avatarUrl;
-
-          const bubbleContent = document.createElement("div");
-          bubbleContent.className = "chat-bubble-content";
-
-          const senderDiv = document.createElement("div");
-          senderDiv.className = "sender";
-          senderDiv.textContent = senderName;
-
-          const textDiv = document.createElement("div");
-          textDiv.textContent = data.text;
-
-          const metaDiv = document.createElement("div");
-          metaDiv.className = "meta";
-          metaDiv.textContent = timeStr;
-
-          bubbleContent.appendChild(senderDiv);
-          bubbleContent.appendChild(textDiv);
-          bubbleContent.appendChild(metaDiv);
-
-          msgDiv.appendChild(avatarImg);
-          msgDiv.appendChild(bubbleContent);
-          chatBox.appendChild(msgDiv);
-        });
-
-        if (lastMessageCount > 0 && msgCount > lastMessageCount) {
-          playNotificationSound();
-        }
-        lastMessageCount = msgCount;
-        chatBox.scrollTop = chatBox.scrollHeight;
-      });
+          <span class="text-xs text-[var(--muted)] font-mono">${m.email}</span>
+        </div>
+      `).join('');
     }
 
-    async function sendMessage() {
-      const text = chatInput.value.trim();
-      if (!text) return;
-
-      const senderName = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : "Fahrer (Anonym)";
-      const senderUid = currentUser ? currentUser.uid : "anon";
-      const senderAvatar = currentUser ? (currentUser.photoURL || "") : "";
-
-      try {
-        await addDoc(collection(db, "chat_messages"), {
-          text: text,
-          senderName: senderName,
-          senderUid: senderUid,
-          senderAvatar: senderAvatar,
-          target: activeChatTarget,
-          createdAt: serverTimestamp()
-        });
-        chatInput.value = "";
-      } catch (err) {
-        console.error("Fehler beim Senden:", err);
+    function openMemberModal() {
+      const name = prompt("Name des neuen Mitglieds:");
+      if (name) {
+        membersData.push({ id: Date.now(), name, role: "member", dept: "Zählpersonal", email: name.toLowerCase().replace(' ','') + "@laenderbahn.de", color: "#6366f1" });
+        renderTeam();
       }
     }
 
-    btnSendChat.addEventListener("click", sendMessage);
-    chatInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") sendMessage();
-    });
+    // TRIPS DATA
+    const tripsData = [
+      { id: "t1", line: "RB 5", train: "80566", dest: "Mehltheuer", status: "active", sev: false },
+      { id: "t2", line: "RB 2", train: "80412", dest: "Zwickau Hbf", status: "planned", sev: true },
+      { id: "t3", line: "RB 5", train: "80560", dest: "Falkenstein", status: "completed", sev: false }
+    ];
 
-    loadChatMessages();
+    function renderTrips() {
+      const list = document.getElementById('tripsList');
+      list.innerHTML = tripsData.map(t => `
+        <div class="p-3 rounded-xl bg-[var(--bg-color)] border border-[var(--border)] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">
+              <i data-lucide="train" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="font-bold text-sm">${t.line} · Zug ${t.train}</p>
+              <p class="text-xs text-[var(--muted)]">→ ${t.dest} ${t.sev ? '· (SEV)' : ''}</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${t.status === 'active' ? 'bg-sky-500/20 text-sky-400' : t.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-300'}">${t.status}</span>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    // DISRUPTIONS DATA
+    const disruptionsData = [
+      { id: "d1", title: "Oberleitungsstörung", status: "Offen", desc: "Eingleisiger Betrieb zwischen Falkenstein & Klingenthal." },
+      { id: "d2", title: "Türstörung VT 650", status: "Behoben", desc: "Türe 2 manuell verriegelt." }
+    ];
+
+    function renderDisruptions() {
+      const list = document.getElementById('disruptionsList');
+      list.innerHTML = disruptionsData.map(d => `
+        <div class="p-3 rounded-xl bg-[var(--bg-color)] border border-[var(--border)] space-y-1">
+          <div class="flex justify-between items-center">
+            <p class="font-bold text-sm ${d.status === 'Offen' ? 'text-amber-400' : 'text-emerald-400'}">${d.title}</p>
+            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-800 border border-[var(--border)]">${d.status}</span>
+          </div>
+          <p class="text-xs text-[var(--muted)]">${d.desc}</p>
+        </div>
+      `).join('');
+    }
+
+    function openDisruptionModal() {
+      const title = prompt("Titel der Störung:");
+      const desc = prompt("Beschreibung:");
+      if (title) {
+        disruptionsData.unshift({ id: "d" + Date.now(), title, status: "Offen", desc: desc || "Keine Beschreibung" });
+        renderDisruptions();
+      }
+    }
+
+    // PIN RESET REQUESTS
+    const pinResets = [
+      { id: "p1", name: "Max Mustermann", email: "max@laenderbahn.de" }
+    ];
+
+    function renderPinResets() {
+      const list = document.getElementById('pinResetRequestsList');
+      if (pinResets.length === 0) {
+        list.innerHTML = `<p class="text-xs text-[var(--muted)]">Keine ausstehenden Anfragen.</p>`;
+        return;
+      }
+      list.innerHTML = pinResets.map(p => `
+        <div class="p-3 rounded-xl bg-[var(--card-bg)] border border-[var(--border)] flex items-center justify-between">
+          <div>
+            <p class="text-sm font-semibold">${p.name}</p>
+            <p class="text-xs text-[var(--muted)]">${p.email}</p>
+          </div>
+          <button onclick="approvePinReset('${p.id}')" class="btn-primary px-3 py-1 rounded text-xs font-semibold">Freigeben</button>
+        </div>
+      `).join('');
+    }
+
+    function approvePinReset(id) {
+      alert("PIN-Reset freigegeben!");
+      const idx = pinResets.findIndex(p => p.id === id);
+      if (idx !== -1) pinResets.splice(idx, 1);
+      renderPinResets();
+    }
+
+    // AUTH SIMULATION
+    function handleLogin() {
+      const email = document.getElementById('authEmail').value;
+      if (!email) { alert("Bitte E-Mail eingeben"); return; }
+      document.getElementById('userBadgeName').textContent = email.split('@')[0];
+      document.getElementById('profileEmail').textContent = email;
+      document.getElementById('profileName').textContent = email.split('@')[0];
+      document.getElementById('authForm').classList.add('hidden');
+      document.getElementById('userProfile').classList.remove('hidden');
+      switchTab('home');
+    }
+
+    function handleLogout() {
+      document.getElementById('userBadgeName').textContent = "Gast";
+      document.getElementById('authForm').classList.remove('hidden');
+      document.getElementById('userProfile').classList.add('hidden');
+    }
+
+    function handlePinResetRequest() {
+      alert("Anfrage zur PIN-Zurücksetzung an den Administrator gesendet!");
+    }
   </script>
 </body>
 </html>
